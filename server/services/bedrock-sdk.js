@@ -2,13 +2,21 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
 import { parseJSON } from '../lib/parseJSON.js'
 
-const client = new BedrockRuntimeClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-})
+// Lazy — only instantiated when bedrock-sdk provider is actually used,
+// so missing IAM credentials don't crash the server at startup.
+let _client = null
+function getClient() {
+  if (!_client) {
+    _client = new BedrockRuntimeClient({
+      region: process.env.AWS_REGION || 'us-east-1',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    })
+  }
+  return _client
+}
 
 async function invokeModel(messages) {
   const modelId = process.env.BEDROCK_MODEL_ID
@@ -28,7 +36,7 @@ async function invokeModel(messages) {
 
   let response
   try {
-    response = await client.send(command)
+    response = await getClient().send(command)
   } catch (err) {
     throw new Error(`Bedrock SDK ${err.$metadata?.httpStatusCode || 'unknown'}: ${err.message}`)
   }
