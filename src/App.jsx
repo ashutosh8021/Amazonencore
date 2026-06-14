@@ -79,7 +79,7 @@ export default function App() {
   }, [])
 
   const nav = {
-    onHome,
+    onHome:           goHome,
     onGetStarted:     goIntake,
     onDemoMode:       goDemo,
     onPersonas:       goPersonas,
