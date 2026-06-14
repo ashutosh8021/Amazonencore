@@ -247,7 +247,7 @@ export default function ListingPreview({ listing, gradeResult, decideResult, ima
         <div className="flex items-center gap-2">
           <ShieldCheck size={14} style={{ color: '#067D62' }} />
           <span className="text-xs font-semibold" style={{ color: '#067D62' }}>
-            Encore Verified listing — condition graded by AI, priced by decision engine, stored in Supabase
+            Encore Verified — condition graded by AI, honest pricing, second life guaranteed
           </span>
         </div>
       </div>

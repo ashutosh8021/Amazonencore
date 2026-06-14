@@ -12,7 +12,7 @@ const DELIVERY_OPTS = [
   { id: 'express',  label: 'Express',  detail: `By ${addDays(1)}`, subtext: 'Tomorrow',           price: 49 },
 ]
 
-export default function CartSidebar({ items, isOpen, onClose, onRemove, onUpdateQty }) {
+export default function CartSidebar({ items, isOpen, onClose, onRemove, onUpdateQty, onCheckout }) {
   const [delivery, setDelivery] = useState('standard')
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0)
@@ -204,9 +204,13 @@ export default function CartSidebar({ items, isOpen, onClose, onRemove, onUpdate
 
             <button
               type="button"
+              onClick={() => {
+                onCheckout?.({ items, delivery, deliveryCost, total })
+                onClose()
+              }}
               style={{ width: '100%', backgroundColor: '#FFD814', color: '#0F1111', fontWeight: 700, fontSize: 15, padding: '13px', borderRadius: 24, border: 'none', cursor: 'pointer' }}
             >
-              Proceed to checkout
+              Proceed to checkout · ₹{total.toLocaleString('en-IN')}
             </button>
             <button
               type="button"

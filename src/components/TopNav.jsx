@@ -47,7 +47,7 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
                 fontSize: '11px',
                 lineHeight: 1,
                 marginLeft: '1px',
-                marginTop: '2px',
+                marginTop: '7px',
               }}>.in</span>
             </div>
             {/* Smile: starts under 'a', arrowhead lands just past 'z' (4th letter) */}

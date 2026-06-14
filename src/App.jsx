@@ -49,10 +49,21 @@ export default function App() {
     )
   }, [])
 
+  const [cartCheckout, setCartCheckout] = useState(null)
+
   const openCart    = useCallback(() => setCartOpen(true), [])
   const closeCart   = useCallback(() => setCartOpen(false), [])
   const openBuyNow  = useCallback((product) => setCheckoutProduct(product), [])
   const closeBuyNow = useCallback(() => setCheckoutProduct(null), [])
+
+  const openCartCheckout = useCallback((data) => {
+    setCartOpen(false)
+    setCartCheckout(data)
+  }, [])
+  const closeCartCheckout = useCallback(() => {
+    setCartCheckout(null)
+    setCartItems([])   // clear cart after order placed
+  }, [])
 
   const scrollTo = useCallback((sectionId) => {
     if (page === 'landing') {
@@ -131,12 +142,23 @@ export default function App() {
         onClose={closeCart}
         onRemove={removeFromCart}
         onUpdateQty={updateQty}
+        onCheckout={openCartCheckout}
       />
 
       {checkoutProduct && (
         <CheckoutModal
           product={checkoutProduct}
           onClose={closeBuyNow}
+        />
+      )}
+
+      {cartCheckout && (
+        <CheckoutModal
+          cartItems={cartCheckout.items}
+          cartDelivery={cartCheckout.delivery}
+          cartDeliveryCost={cartCheckout.deliveryCost}
+          cartTotal={cartCheckout.total}
+          onClose={closeCartCheckout}
         />
       )}
     </>

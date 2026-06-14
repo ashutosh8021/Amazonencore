@@ -7,7 +7,7 @@ import TopNav from '../components/TopNav.jsx'
 import SubNav from '../components/SubNav.jsx'
 import ReportCard from '../components/ReportCard.jsx'
 import ListingPreview from '../components/ListingPreview.jsx'
-import { gradeImage, decide, generateListing, healthCheck, API_BASE_URL } from '../lib/api.js'
+import { gradeImage, decide, generateListing } from '../lib/api.js'
 
 const CATEGORIES = [
   'Electronics', 'Footwear', 'Apparel', 'Home & Kitchen',
@@ -431,8 +431,6 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
   const [loading, setLoading]         = useState(false)
   const [loadingStep, setLoadingStep] = useState('')
   const [error, setError]             = useState(null)
-  const [failedStep, setFailedStep]   = useState(null)
-  const [backendOk, setBackendOk]     = useState(null) // null=checking, true=ok, false=unreachable
   const [lowConfidence, setLowConfidence] = useState(false)
 
   const [gradeResult, setGradeResult]     = useState(null)
@@ -467,7 +465,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
   function reset() {
     setFile(null); setPreview(null)
     setName(''); setPrice(''); setCategory('')
-    setLoading(false); setLoadingStep(''); setError(null); setFailedStep(null); setLowConfidence(false)
+    setLoading(false); setLoadingStep(''); setError(null); setLowConfidence(false)
     setGradeResult(null); setDecideResult(null); setListingResult(null); setShowReport(false)
   }
 
@@ -476,25 +474,18 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
     setLoading(true); setError(null); setFailedStep(null); setLowConfidence(false)
     setGradeResult(null); setDecideResult(null); setListingResult(null)
 
-    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-    const opts = { requestId }
+    const opts = { requestId: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
 
     try {
       setLoadingStep('Grading condition with AI...')
       const b64 = await toBase64(file)
-      let graded
-      try {
-        graded = await gradeImage({
-          imageBase64: b64,
-          mediaType: file.type,
-          name: name || undefined,
-          price: price ? Number(price) : undefined,
-          category: category || undefined,
-        }, opts)
-      } catch (gradeErr) {
-        setFailedStep('AI condition grading')
-        throw gradeErr
-      }
+      const graded = await gradeImage({
+        imageBase64: b64,
+        mediaType: file.type,
+        name: name || undefined,
+        price: price ? Number(price) : undefined,
+        category: category || undefined,
+      }, opts)
       setGradeResult(graded)
 
       setLoadingStep('Running decision engine...')
@@ -511,25 +502,18 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
           setLowConfidence(true)
           return
         }
-        setFailedStep('decision engine')
         throw decideErr
       }
       setDecideResult(decided)
 
       if (decided.decision === 'Resell' || decided.decision === 'Refurbish') {
         setLoadingStep('Generating listing...')
-        let listed
-        try {
-          listed = await generateListing({
-            product: graded.product,
-            grade: graded.grade,
-            observations: graded.observations,
-            price: price ? Number(price) : undefined,
-          }, opts)
-        } catch (listErr) {
-          setFailedStep('listing generation')
-          throw listErr
-        }
+        const listed = await generateListing({
+          product: graded.product,
+          grade: graded.grade,
+          observations: graded.observations,
+          price: price ? Number(price) : undefined,
+        }, opts)
         setListingResult(listed)
       }
     } catch (err) {
@@ -626,12 +610,6 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
     runDemo()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Ping the backend on mount so we know immediately if it's unreachable
-  useEffect(() => {
-    healthCheck()
-      .then(() => setBackendOk(true))
-      .catch(() => setBackendOk(false))
-  }, [])
 
   const hasResult = gradeResult && decideResult
   const demoRunning = demoMode && (loading || hasResult)
@@ -896,40 +874,13 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                       </div>
                     </div>
 
-                    {backendOk === false && (
-                      <div
-                        className="flex flex-col gap-2 text-sm rounded-md border p-4"
-                        style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca', color: '#991b1b' }}
-                      >
-                        <div className="flex items-center gap-2 font-bold">
-                          <AlertCircle size={16} className="flex-shrink-0" />
-                          Backend unreachable
-                        </div>
-                        <p className="text-xs leading-relaxed" style={{ color: '#7f1d1d' }}>
-                          The app cannot connect to the Encore API at <code className="font-mono bg-red-100 px-1 rounded">{API_BASE_URL}</code>.
-                          {!import.meta.env.VITE_API_URL && (
-                            <> Set <code className="font-mono bg-red-100 px-1 rounded">VITE_API_URL</code> to your Railway backend URL in Amplify environment variables and redeploy.</>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
                     {error && (
                       <div
-                        className="flex flex-col gap-1.5 text-sm text-red-700 rounded-md border p-4"
-                        style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca' }}
+                        className="flex items-center gap-2 text-sm rounded-md border p-4"
+                        style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca', color: '#991b1b' }}
                       >
-                        <div className="flex items-center gap-2 font-semibold">
-                          <AlertCircle size={16} className="flex-shrink-0" />
-                          {failedStep ? `Failed at: ${failedStep}` : 'Something went wrong'}
-                        </div>
-                        <span className="break-all text-xs font-mono pl-6">{error}</span>
-                        {error === 'Failed to fetch' && (
-                          <p className="text-xs pl-6 mt-1" style={{ color: '#b91c1c' }}>
-                            The API at <code className="font-mono bg-red-100 px-1 rounded">{API_BASE_URL}</code> is not responding.
-                            {!import.meta.env.VITE_API_URL && ' VITE_API_URL is not set — add your Railway URL to Amplify env vars.'}
-                          </p>
-                        )}
+                        <AlertCircle size={16} className="flex-shrink-0" />
+                        <span>Something went wrong. Please try again, or use a clearer photo with better lighting.</span>
                       </div>
                     )}
 

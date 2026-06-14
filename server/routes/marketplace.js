@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import { supabase } from '../lib/supabase.js'
 import { storeImage } from '../lib/imageStorage.js'
-import { requireWriteToken } from '../middleware/writeAuth.js'
 
 const router = Router()
 
@@ -9,7 +8,7 @@ const router = Router()
 const fallbackStore = []
 
 /* POST /api/marketplace — save a new listing to Supabase */
-router.post('/', requireWriteToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { title, description, conditionLabel, suggestedPrice, originalPrice,
             category, grade, confidence, observations, imageBase64, mediaType,
