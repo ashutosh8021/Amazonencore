@@ -1,5 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL || ''
 
+// Exported so the UI can show the actual URL in error messages
+export const API_BASE_URL = BASE_URL || window.location.origin
+
 async function post(endpoint, body) {
   const res = await fetch(`${BASE_URL}/api/${endpoint}`, {
     method: 'POST',
@@ -35,6 +38,7 @@ async function get(endpoint) {
 export const gradeImage = (body) => post('grade', body)
 export const decide = (body) => post('decide', body)
 export const generateListing = (body) => post('listing', body)
+export const healthCheck = () => get('health')
 
 /* ── marketplace ─────────────────────────────────────────────────── */
 export const publishListing = (body) => post('marketplace', body)
