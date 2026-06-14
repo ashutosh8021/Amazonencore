@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, ShieldCheck, X, BookOpen, CheckCircle2, AlertTriangle, ShoppingCart, Zap } from 'lucide-react'
 import { listings } from '../data/listings.js'
+import { fetchUserListings } from '../lib/api.js'
 
 const CONDITION_ORDER = ['Like New', 'Very Good', 'Good', 'Acceptable']
 
@@ -127,32 +128,29 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/marketplace')
-        if (res.ok) {
-          const { listings: items } = await res.json()
-          if (items?.length) {
-            const mapped = items.map(item => ({
-              id: item.id,
-              title: item.title,
-              category: item.category || 'General',
-              conditionScore: item.condition_score || 80,
-              conditionGrade: item.condition_grade || 'Good',
-              price: Number(item.price) || 0,
-              originalPrice: Number(item.original_price) || 0,
-              image: item.image_url || null,
-              tag: 'Just listed',
-              rating: '—',
-              reviews: 'New',
-              delivery: 'FREE delivery by Amazon',
-              conditionReport: {
-                confidence: item.condition_score || 80,
-                observations: item.observations || [],
-                summary: item.condition_summary || item.description || '',
-              },
-              userListed: true,
-            }))
-            setUserItems(mapped)
-          }
+        const { listings: items } = await fetchUserListings()
+        if (items?.length) {
+          const mapped = items.map(item => ({
+            id: item.id,
+            title: item.title,
+            category: item.category || 'General',
+            conditionScore: item.condition_score || 80,
+            conditionGrade: item.condition_grade || 'Good',
+            price: Number(item.price) || 0,
+            originalPrice: Number(item.original_price) || 0,
+            image: item.image_url || null,
+            tag: 'Just listed',
+            rating: '—',
+            reviews: 'New',
+            delivery: 'FREE delivery by Amazon',
+            conditionReport: {
+              confidence: item.condition_score || 80,
+              observations: item.observations || [],
+              summary: item.condition_summary || item.description || '',
+            },
+            userListed: true,
+          }))
+          setUserItems(mapped)
         }
       } catch { /* silent fail */ }
     }

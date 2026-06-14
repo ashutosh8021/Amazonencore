@@ -32,24 +32,27 @@ export default function CheckoutModal({ product, onClose }) {
 
   return (
     <>
-      {/* Backdrop — only close on click if order not yet placed */}
+      {/* Backdrop + centering wrapper */}
       <div
         onClick={!ordered ? onClose : undefined}
-        style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1002 }}
-      />
-
-      {/* Modal */}
+        style={{
+          position: 'fixed', inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          zIndex: 1002,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '16px',
+        }}
+      >
+      {/* Modal — stop click bubbling so inner clicks don't close it */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={ordered ? 'Order confirmed' : 'Buy now'}
+        onClick={e => e.stopPropagation()}
         style={{
-          position: 'fixed', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 'min(520px, calc(100vw - 32px))',
+          width: 'min(520px, 100%)',
           maxHeight: '90vh', overflowY: 'auto',
           backgroundColor: 'white', borderRadius: 12,
-          zIndex: 1003,
           boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
         }}
       >
@@ -217,6 +220,7 @@ export default function CheckoutModal({ product, onClose }) {
             </div>
           </>
         )}
+      </div>
       </div>
     </>
   )
