@@ -38,7 +38,8 @@ async function get(endpoint) {
 export const gradeImage = (body) => post('grade', body)
 export const decide = (body) => post('decide', body)
 export const generateListing = (body) => post('listing', body)
-export const healthCheck = () => get('health')
+export const healthCheck = () =>
+  fetch(`${BASE_URL}/health`).then(r => { if (!r.ok) throw new Error('unhealthy'); return r.json() })
 
 /* ── marketplace ─────────────────────────────────────────────────── */
 export const publishListing = (body) => post('marketplace', body)
