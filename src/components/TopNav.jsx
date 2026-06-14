@@ -23,15 +23,15 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
             <Menu size={20} />
           </button>
 
-          {/* Amazon.in logo — HTML text (sharp) + SVG smile only */}
+          {/* Amazon.in logo */}
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); if (onHome) onHome() }}
             className="flex-shrink-0 select-none border border-transparent hover:border-white rounded px-1 py-0.5 transition-colors inline-block"
             aria-label="Amazon Encore home"
           >
-            {/* wordmark row — same font weight, baseline aligned */}
-            <div className="flex items-baseline leading-none">
+            {/* ".in" sits at top-right — same as real Amazon.in */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', lineHeight: 1 }}>
               <span style={{
                 color: 'white',
                 fontFamily: "'Arial Black', Arial, sans-serif",
@@ -39,24 +39,23 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
                 fontSize: '22px',
                 letterSpacing: '-0.5px',
                 lineHeight: 1,
-              }}>
-                amazon
-              </span>
+              }}>amazon</span>
               <span style={{
                 color: '#FF9900',
                 fontFamily: "'Arial Black', Arial, sans-serif",
                 fontWeight: 900,
-                fontSize: '13px',
+                fontSize: '11px',
                 lineHeight: 1,
-                marginLeft: '2px',
-              }}>
-                .in
-              </span>
+                marginLeft: '1px',
+                marginTop: '2px',
+              }}>.in</span>
             </div>
-            {/* smile — reference 200×70 viewBox squished to 18px tall for shallow arc */}
-            <svg viewBox="0 0 200 70" width="110" height="18" preserveAspectRatio="none" style={{ display: 'block', marginTop: '1px' }} aria-hidden="true">
-              <path d="M 5 34 Q 95 60 162 30" stroke="#FF9900" strokeWidth="7" fill="none" strokeLinecap="round"/>
-              <path d="M 148 36 Q 158 28 164 14 Q 160 30 170 36 Z" fill="#FF9900"/>
+            {/* Smile arc + arrowhead — natural aspect ratio, no preserveAspectRatio distortion */}
+            <svg viewBox="0 0 124 15" width="124" height="11" style={{ display: 'block', marginTop: '2px' }} aria-hidden="true">
+              {/* Arc: left edge → dip → ends just before arrowhead */}
+              <path d="M 4 4 Q 60 15 108 4" stroke="#FF9900" strokeWidth="4" fill="none" strokeLinecap="round"/>
+              {/* Filled arrowhead pointing right, tip at x=112 */}
+              <path d="M 103 0 L 114 4 L 105 10 Z" fill="#FF9900"/>
             </svg>
           </a>
 
