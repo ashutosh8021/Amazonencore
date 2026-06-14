@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import { supabase } from '../lib/supabase.js'
+import { storeImage } from '../lib/imageStorage.js'
+import { requireWriteToken } from '../middleware/writeAuth.js'
 
 const router = Router()
 
@@ -7,12 +9,21 @@ const router = Router()
 const fallbackStore = []
 
 /* POST /api/marketplace — save a new listing to Supabase */
-router.post('/', async (req, res) => {
+router.post('/', requireWriteToken, async (req, res) => {
   try {
     const { title, description, conditionLabel, suggestedPrice, originalPrice,
-            category, grade, confidence, observations, imageBase64, co2SavedKg } = req.body
+            category, grade, confidence, observations, imageBase64, mediaType,
+            co2SavedKg } = req.body
 
     if (!title) return res.status(400).json({ error: 'Title is required' })
+
+    // Try Supabase Storage first; fall back to inline data URI to avoid
+    // storing large base64 blobs as row values.
+    let imageUrl = null
+    if (imageBase64) {
+      imageUrl = await storeImage(imageBase64, mediaType || 'image/jpeg')
+        ?? `data:${mediaType || 'image/jpeg'};base64,${imageBase64}`
+    }
 
     const row = {
       title,
@@ -22,7 +33,7 @@ router.post('/', async (req, res) => {
       condition_score: confidence || 80,
       price: Number(suggestedPrice) || 0,
       original_price: Number(originalPrice) || 0,
-      image_url: imageBase64 ? `data:image/jpeg;base64,${imageBase64}` : null,
+      image_url: imageUrl,
       tag: 'Just listed',
       observations: observations || [],
       condition_summary: description || '',
@@ -36,21 +47,21 @@ router.post('/', async (req, res) => {
         .select()
 
       if (error) {
-        console.error('[marketplace] Supabase insert error:', error.message)
+        console.error(`[marketplace] [${req.requestId}] Supabase insert error:`, error.message)
         return res.status(500).json({ error: error.message })
       }
 
-      console.log(`[marketplace] Listed "${title}" to Supabase`)
+      console.log(`[marketplace] [${req.requestId}] Listed "${title}" to Supabase`)
       return res.json({ ok: true, listing: data[0] })
     }
 
     // fallback: in-memory
     const item = { id: `local-${Date.now()}`, ...row, created_at: new Date().toISOString() }
     fallbackStore.unshift(item)
-    console.log(`[marketplace] Listed "${title}" to in-memory store (${fallbackStore.length} total)`)
+    console.log(`[marketplace] [${req.requestId}] Listed "${title}" in-memory (${fallbackStore.length} total)`)
     res.json({ ok: true, listing: item })
   } catch (err) {
-    console.error('[marketplace] Error:', err.message)
+    console.error(`[marketplace] [${req.requestId}] Error:`, err.message)
     res.status(500).json({ error: err.message })
   }
 })

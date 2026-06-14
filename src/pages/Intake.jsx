@@ -476,6 +476,9 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
     setLoading(true); setError(null); setFailedStep(null); setLowConfidence(false)
     setGradeResult(null); setDecideResult(null); setListingResult(null)
 
+    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    const opts = { requestId }
+
     try {
       setLoadingStep('Grading condition with AI...')
       const b64 = await toBase64(file)
@@ -487,7 +490,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
           name: name || undefined,
           price: price ? Number(price) : undefined,
           category: category || undefined,
-        })
+        }, opts)
       } catch (gradeErr) {
         setFailedStep('AI condition grading')
         throw gradeErr
@@ -502,7 +505,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
           price: price ? Number(price) : 0,
           category: graded.category || category || 'default',
           confidence: graded.confidence,
-        })
+        }, opts)
       } catch (decideErr) {
         if (decideErr.status === 422 || decideErr.code === 'low_confidence') {
           setLowConfidence(true)
@@ -522,7 +525,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
             grade: graded.grade,
             observations: graded.observations,
             price: price ? Number(price) : undefined,
-          })
+          }, opts)
         } catch (listErr) {
           setFailedStep('listing generation')
           throw listErr

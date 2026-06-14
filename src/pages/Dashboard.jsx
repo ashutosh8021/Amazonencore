@@ -220,6 +220,16 @@ export default function Dashboard({ onBack, nav = {}, onScrollTo }) {
           </div>
         </div>
 
+        {/* seeded data notice */}
+        {!isLive && !loading && (
+          <div className="rounded-md border mb-4 px-4 py-3 flex items-center gap-3"
+            style={{ borderColor: '#FFD814', backgroundColor: '#fff8e0' }}>
+            <span className="text-sm" style={{ color: '#565959' }}>
+              Figures include illustrative baseline data and will update with real activity as items are processed through Encore.
+            </span>
+          </div>
+        )}
+
         {/* top stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {topStats.map(stat => {

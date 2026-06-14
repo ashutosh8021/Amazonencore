@@ -7,15 +7,9 @@ const demoCache = require('../data/demo-cache.json')
 
 const router = Router()
 
-function findCachedDemo(body) {
-  const { name, demo } = body
-  if (demo === true && name) {
-    return demoCache.find(entry => entry.name.toLowerCase() === name.toLowerCase())
-  }
-  if (name) {
-    return demoCache.find(entry => entry.name.toLowerCase() === name.toLowerCase())
-  }
-  return null
+function findCachedDemo({ name }) {
+  if (!name) return null
+  return demoCache.find(entry => entry.name.toLowerCase() === name.toLowerCase()) ?? null
 }
 
 // ~4 MB limit — base64 is 4/3× the raw size, so 4 MB actual ≈ 5.5 MB of base64 text
@@ -47,7 +41,7 @@ router.post('/', async (req, res) => {
     const result = await gradeImage({ imageBase64, mediaType, name, price, category })
     res.json(result)
   } catch (err) {
-    console.error('[/api/grade]', err.message)
+    console.error(`[/api/grade] [${req.requestId}]`, err.message)
     res.status(500).json({ error: err.message })
   }
 })

@@ -14,6 +14,7 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 async function callGroq(messages) {
   const res = await fetch(GROQ_URL, {
     method: 'POST',
+    signal: AbortSignal.timeout(30_000),
     headers: {
       'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       'Content-Type': 'application/json',

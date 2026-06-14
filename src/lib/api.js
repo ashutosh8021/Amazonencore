@@ -3,10 +3,14 @@ const BASE_URL = import.meta.env.VITE_API_URL || ''
 // Exported so the UI can show the actual URL in error messages
 export const API_BASE_URL = BASE_URL || window.location.origin
 
-async function post(endpoint, body) {
+async function post(endpoint, body, { requestId, writeToken } = {}) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (requestId) headers['X-Request-Id'] = requestId
+  if (writeToken) headers['Authorization'] = `Bearer ${writeToken}`
+
   const res = await fetch(`${BASE_URL}/api/${endpoint}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   })
   if (!res.ok) {
@@ -35,12 +39,15 @@ async function get(endpoint) {
   return res.json()
 }
 
-export const gradeImage = (body) => post('grade', body)
-export const decide = (body) => post('decide', body)
-export const generateListing = (body) => post('listing', body)
+export const gradeImage      = (body, opts) => post('grade',   body, opts)
+export const decide          = (body, opts) => post('decide',  body, opts)
+export const generateListing = (body, opts) => post('listing', body, opts)
 export const healthCheck = () =>
   fetch(`${BASE_URL}/health`).then(r => { if (!r.ok) throw new Error('unhealthy'); return r.json() })
 
 /* ── marketplace ─────────────────────────────────────────────────── */
-export const publishListing = (body) => post('marketplace', body)
+export const publishListing = (body, opts = {}) => {
+  const token = import.meta.env.VITE_MARKETPLACE_WRITE_TOKEN
+  return post('marketplace', body, { ...opts, writeToken: token || undefined })
+}
 export const fetchUserListings = () => get('marketplace')

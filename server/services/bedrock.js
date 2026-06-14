@@ -10,6 +10,7 @@ async function callBedrock(messages) {
   const url = bedrockUrl()
   const res = await fetch(url, {
     method: 'POST',
+    signal: AbortSignal.timeout(30_000),
     headers: {
       'Authorization': `Bearer ${process.env.AWS_BEARER_TOKEN_BEDROCK}`,
       'Content-Type': 'application/json',

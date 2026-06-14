@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
     const result = await generateListing(req.body)
     res.json(result)
   } catch (err) {
-    console.error('[/api/listing]', err.message)
+    console.error(`[/api/listing] [${req.requestId}]`, err.message)
     res.status(500).json({ error: err.message })
   }
 })

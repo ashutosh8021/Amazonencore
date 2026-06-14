@@ -48,11 +48,11 @@ router.post('/', (req, res) => {
         net_carbon_saved_kg: result.netCarbonSavedKg,
         green_credits: result.greenCredits,
       }]).then(({ error }) => {
-        if (error) console.error('[decide] Supabase log error:', error.message)
+        if (error) console.error(`[decide] [${req.requestId}] Supabase log error:`, error.message)
       })
     }
   } catch (err) {
-    console.error('[/api/decide]', err.message)
+    console.error(`[/api/decide] [${req.requestId}]`, err.message)
     res.status(500).json({ error: err.message })
   }
 })
