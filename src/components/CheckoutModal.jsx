@@ -117,53 +117,53 @@ export default function CheckoutModal({ product, onClose }) {
               </button>
             </div>
 
-            <div style={{ padding: '24px' }}>
+            <div style={{ padding: '16px' }}>
               {/* Product */}
-              <div style={{ display: 'flex', gap: 14, marginBottom: 22 }}>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 14, padding: '10px', backgroundColor: '#F7F8F8', borderRadius: 8, border: '1px solid #D5D9D9' }}>
                 <img
                   src={product.image ?? fallback}
                   alt={product.title}
                   onError={(e) => { e.target.src = fallback }}
-                  style={{ width: 90, height: 90, objectFit: 'cover', borderRadius: 8, border: '1px solid #D5D9D9', flexShrink: 0 }}
+                  style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #D5D9D9', flexShrink: 0 }}
                 />
-                <div>
-                  <p style={{ fontSize: 15, fontWeight: 500, color: '#0F1111', lineHeight: 1.4, marginBottom: 8 }}>{product.title}</p>
-                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: '#e6f4ea', color: '#067D62', borderRadius: 20, padding: '2px 8px', marginBottom: 10 }}>
-                    {product.conditionGrade}
-                  </span>
-                  <p style={{ fontSize: 22, fontWeight: 500, color: '#0F1111', margin: 0 }}>₹{product.price.toLocaleString('en-IN')}</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: '#0F1111', lineHeight: 1.3, marginBottom: 4 }}>{product.title}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: '#e6f4ea', color: '#067D62', borderRadius: 20, padding: '1px 7px' }}>
+                      {product.conditionGrade}
+                    </span>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: '#0F1111' }}>₹{product.price.toLocaleString('en-IN')}</span>
+                  </div>
                 </div>
               </div>
 
               {/* Delivery address */}
-              <div style={{ marginBottom: 16, padding: '14px 16px', backgroundColor: '#F7F8F8', borderRadius: 8, border: '1px solid #D5D9D9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-                  <MapPin size={14} color="#565959" />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#0F1111', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Delivering to</span>
+              <div style={{ marginBottom: 10, padding: '10px 12px', backgroundColor: '#F7F8F8', borderRadius: 8, border: '1px solid #D5D9D9', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <MapPin size={14} color="#565959" style={{ flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 12, color: '#0F1111', fontWeight: 600, margin: 0 }}>Ashutosh Kumar · Bengaluru, Karnataka — 560001</p>
                 </div>
-                <p style={{ fontSize: 14, color: '#0F1111', fontWeight: 600, margin: '0 0 2px' }}>Ashutosh Kumar</p>
-                <p style={{ fontSize: 13, color: '#565959', margin: 0 }}>Bengaluru, Karnataka — 560001</p>
               </div>
 
               {/* Delivery speed */}
-              <div style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#0F1111', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Delivery speed</p>
-                <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ marginBottom: 10 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: '#565959', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Delivery speed</p>
+                <div style={{ display: 'flex', gap: 8 }}>
                   {DELIVERY_OPTS.map(opt => (
                     <button
                       key={opt.id}
                       type="button"
                       onClick={() => setDelivery(opt.id)}
                       style={{
-                        flex: 1, padding: '12px 14px', borderRadius: 8, textAlign: 'left',
+                        flex: 1, padding: '8px 10px', borderRadius: 8, textAlign: 'left',
                         border: `2px solid ${delivery === opt.id ? '#FF9900' : '#D5D9D9'}`,
                         backgroundColor: delivery === opt.id ? '#fff8e0' : 'white',
-                        cursor: 'pointer', transition: 'border-color 0.15s ease',
+                        cursor: 'pointer',
                       }}
                     >
-                      <p style={{ fontSize: 13, fontWeight: 700, color: delivery === opt.id ? '#c45500' : '#0F1111', margin: '0 0 2px' }}>{opt.label}</p>
-                      <p style={{ fontSize: 11, color: '#565959', margin: '0 0 4px' }}>{opt.detail}</p>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: opt.price > 0 ? '#c45500' : '#067D62', margin: 0 }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: delivery === opt.id ? '#c45500' : '#0F1111', margin: '0 0 1px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 10, color: '#565959', margin: '0 0 2px' }}>{opt.detail}</p>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: opt.price > 0 ? '#c45500' : '#067D62', margin: 0 }}>
                         {opt.price > 0 ? `+₹${opt.price}` : 'Free'}
                       </p>
                     </button>
@@ -171,31 +171,24 @@ export default function CheckoutModal({ product, onClose }) {
                 </div>
               </div>
 
-              {/* Payment */}
-              <div style={{ marginBottom: 20, padding: '14px 16px', backgroundColor: '#F7F8F8', borderRadius: 8, border: '1px solid #D5D9D9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-                  <CreditCard size={14} color="#565959" />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#0F1111', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Payment method</span>
+              {/* Payment + Order total combined */}
+              <div style={{ backgroundColor: '#F7F8F8', borderRadius: 8, padding: '12px', marginBottom: 14, border: '1px solid #D5D9D9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #E7E7E7' }}>
+                  <CreditCard size={13} color="#565959" />
+                  <span style={{ fontSize: 12, color: '#0F1111', fontWeight: 600 }}>Cash on delivery</span>
+                  <span style={{ fontSize: 11, color: '#565959', marginLeft: 4 }}>· Pay on arrival</span>
                 </div>
-                <p style={{ fontSize: 14, color: '#0F1111', fontWeight: 600, margin: '0 0 2px' }}>Cash on delivery</p>
-                <p style={{ fontSize: 13, color: '#565959', margin: 0 }}>Pay when your order arrives</p>
-              </div>
-
-              {/* Order total */}
-              <div style={{ backgroundColor: '#F7F8F8', borderRadius: 8, padding: '16px', marginBottom: 20 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#565959', marginBottom: 6 }}>
-                  <span>Item</span>
-                  <span>₹{product.price.toLocaleString('en-IN')}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#565959', marginBottom: 4 }}>
+                  <span>Item</span><span>₹{product.price.toLocaleString('en-IN')}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#565959', marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#565959', marginBottom: 8 }}>
                   <span>Delivery</span>
-                  <span style={{ color: deliveryCost > 0 ? '#0F1111' : '#067D62', fontWeight: deliveryCost > 0 ? 400 : 500 }}>
+                  <span style={{ color: deliveryCost > 0 ? '#0F1111' : '#067D62', fontWeight: 500 }}>
                     {deliveryCost > 0 ? `₹${deliveryCost}` : 'Free'}
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700, color: '#0F1111', borderTop: '1px solid #D5D9D9', paddingTop: 10 }}>
-                  <span>Order total</span>
-                  <span>₹{total.toLocaleString('en-IN')}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, color: '#0F1111', borderTop: '1px solid #D5D9D9', paddingTop: 8 }}>
+                  <span>Order total</span><span>₹{total.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -206,15 +199,14 @@ export default function CheckoutModal({ product, onClose }) {
                 style={{
                   width: '100%',
                   backgroundColor: loading ? '#FFE878' : '#FFD814',
-                  color: '#0F1111', fontWeight: 700, fontSize: 16,
-                  padding: '14px', borderRadius: 24, border: 'none',
+                  color: '#0F1111', fontWeight: 700, fontSize: 15,
+                  padding: '12px', borderRadius: 24, border: 'none',
                   cursor: loading ? 'wait' : 'pointer',
-                  transition: 'background-color 0.15s ease',
                 }}
               >
-                {loading ? 'Placing order…' : `Place order  ·  ₹${total.toLocaleString('en-IN')}`}
+                {loading ? 'Placing order…' : `Place order · ₹${total.toLocaleString('en-IN')}`}
               </button>
-              <p style={{ textAlign: 'center', fontSize: 11, color: '#879596', marginTop: 10, marginBottom: 0 }}>
+              <p style={{ textAlign: 'center', fontSize: 10, color: '#879596', marginTop: 8, marginBottom: 0 }}>
                 By placing your order you agree to Encore's conditions of use.
               </p>
             </div>
