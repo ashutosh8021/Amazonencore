@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
+import { AuthProvider } from './context/AuthContext.jsx'
+import AuthModal from './components/AuthModal.jsx'
 import Landing from './pages/Landing.jsx'
 import Intake from './pages/Intake.jsx'
 import Personas from './pages/Personas.jsx'
@@ -7,10 +9,11 @@ import MarketplacePage from './pages/MarketplacePage.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 import CheckoutModal from './components/CheckoutModal.jsx'
 
-export default function App() {
+function AppInner() {
   const [page, setPage] = useState('landing')
   const [demoMode, setDemoMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   // Cart state
   const [cartItems, setCartItems] = useState([])
@@ -28,6 +31,8 @@ export default function App() {
   const goDashboard = useCallback(() => setPage('dashboard'), [])
   const goMarket    = useCallback(() => { setSearchQuery(''); setPage('marketplace') }, [])
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
+  const openAuth    = useCallback(() => setAuthModalOpen(true), [])
+  const closeAuth   = useCallback(() => setAuthModalOpen(false), [])
 
   const addToCart = useCallback((product) => {
     setCartItems(prev => {
@@ -62,7 +67,7 @@ export default function App() {
   }, [])
   const closeCartCheckout = useCallback(() => {
     setCartCheckout(null)
-    setCartItems([])   // clear cart after order placed
+    setCartItems([])
   }, [])
 
   const scrollTo = useCallback((sectionId) => {
@@ -101,6 +106,7 @@ export default function App() {
     onAddToCart:      addToCart,
     onBuyNow:         openBuyNow,
     onOpenCart:       openCart,
+    onSignIn:         openAuth,
     cartItems,
     cartCount,
     onRemoveFromCart: removeFromCart,
@@ -131,6 +137,7 @@ export default function App() {
           onScrollTo={scrollTo}
           onMount={handleLandingMount}
           onSearch={goSearch}
+          onSignIn={openAuth}
           cartCount={cartCount}
           onOpenCart={openCart}
         />
@@ -161,6 +168,16 @@ export default function App() {
           onClose={closeCartCheckout}
         />
       )}
+
+      {authModalOpen && <AuthModal onClose={closeAuth} />}
     </>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
   )
 }

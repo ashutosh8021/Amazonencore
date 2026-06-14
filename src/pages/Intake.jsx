@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  AlertCircle, AlertTriangle, ArrowLeft, Award, CheckCircle2, Heart, Leaf, Loader2, RotateCcw,
+  AlertCircle, AlertTriangle, ArrowLeft, ArrowLeftRight, Award, CheckCircle2, Heart, Leaf, Loader2, RotateCcw,
   ShieldCheck, Shirt, Smartphone, TrendingUp, Upload, Wrench, X, Zap,
 } from 'lucide-react'
 import TopNav from '../components/TopNav.jsx'
@@ -23,10 +23,11 @@ const GRADE_CFG = {
 }
 
 const DECISION_CFG = {
-  'Resell':    { color: '#067D62', bg: '#e6f4ea', Icon: TrendingUp, label: 'Listed for sale' },
-  'Refurbish': { color: '#007185', bg: '#e0f0f3', Icon: Wrench,     label: 'Prepared for refurbishment' },
-  'Donate':    { color: '#FF9900', bg: '#fff8e0', Icon: Heart,       label: 'Routed to donation' },
-  'Recycle':   { color: '#555555', bg: '#f3f3f3', Icon: Leaf,        label: 'Sent to responsible recycling' },
+  'Resell':    { color: '#067D62', bg: '#e6f4ea', Icon: TrendingUp,     label: 'Listed for sale' },
+  'Refurbish': { color: '#007185', bg: '#e0f0f3', Icon: Wrench,         label: 'Prepared for refurbishment' },
+  'Donate':    { color: '#FF9900', bg: '#fff8e0', Icon: Heart,           label: 'Routed to donation' },
+  'Recycle':   { color: '#555555', bg: '#f3f3f3', Icon: Leaf,           label: 'Sent to responsible recycling' },
+  'Exchange':  { color: '#007185', bg: '#e0f0f3', Icon: ArrowLeftRight, label: 'Trade-in for Amazon Pay credit' },
 }
 
 const FLOW_STEPS = [
@@ -310,6 +311,36 @@ function GreenCreditsCard({ greenCredits, netCarbonSavedKg }) {
   )
 }
 
+function ExchangeCreditsCard({ exchangeCredits, netCarbonSavedKg }) {
+  return (
+    <div
+      className="rounded-md border p-4 flex items-center gap-4"
+      style={{ borderColor: '#007185', backgroundColor: '#e0f0f3' }}
+    >
+      <div
+        className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
+        style={{ backgroundColor: '#007185' }}
+      >
+        <ArrowLeftRight size={20} style={{ color: 'white' }} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-0.5">
+          Trade-in credit earned
+        </p>
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <span className="text-2xl font-extrabold" style={{ color: '#007185' }}>
+            ₹{exchangeCredits}
+          </span>
+          <span className="text-sm text-[#565959]">
+            Amazon Pay · redeemable on Encore marketplace
+            {netCarbonSavedKg != null ? ` · ${netCarbonSavedKg.toFixed(1)} kg CO2 saved` : ''}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function LowConfidenceCard({ confidence, onReset }) {
   return (
     <div className="rounded-md border bg-white p-5 flex flex-col gap-4" style={{ borderColor: '#fecaca' }}>
@@ -371,6 +402,43 @@ function RewardCard({ listing, decideResult }) {
               ₹{Number(listing.suggestedPrice).toLocaleString('en-IN')}
             </span>
           )}
+        </div>
+      </div>
+    )
+  }
+
+  if (decideResult.decision === 'Exchange') {
+    return (
+      <div className="rounded-md border bg-white p-5 flex flex-col gap-4" style={{ borderColor: '#D5D9D9' }}>
+        <div className="flex items-center gap-2">
+          <ArrowLeftRight size={16} style={{ color: '#007185' }} />
+          <span className="font-bold text-base" style={{ color: '#0F1111' }}>Trade-in outcome</span>
+        </div>
+        <div className="rounded-md p-4" style={{ backgroundColor: '#e0f0f3' }}>
+          <p className="text-sm font-semibold mb-1" style={{ color: '#007185' }}>
+            Encore trade-in — your item is repurposed rather than discarded
+          </p>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Direct resale would recover {formatCurrency(decideResult.expectedResaleValue)} but cost{' '}
+            {formatCurrency(decideResult.processingCost)}, a net loss of{' '}
+            {formatCurrency(Math.abs(decideResult.netResell))}. Trade-in gives you instant Amazon Pay credit instead.
+          </p>
+        </div>
+        <div className="rounded-md p-4 flex items-center gap-4" style={{ backgroundColor: '#e6f4ea' }}>
+          <div className="flex-shrink-0">
+            <p className="text-3xl font-extrabold leading-none" style={{ color: '#007185' }}>
+              ₹{decideResult.exchangeCredits}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">Amazon Pay</p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold" style={{ color: '#067D62' }}>
+              Redeemable on Encore marketplace
+            </p>
+            <p className="text-sm text-gray-600 mt-0.5">
+              Use it toward a certified refurbished replacement.
+            </p>
+          </div>
         </div>
       </div>
     )
@@ -471,7 +539,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
 
   async function run() {
     if (!file) return
-    setLoading(true); setError(null); setFailedStep(null); setLowConfidence(false)
+    setLoading(true); setError(null); setLowConfidence(false)
     setGradeResult(null); setDecideResult(null); setListingResult(null)
 
     const opts = { requestId: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
@@ -625,7 +693,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
 
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} />
+      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}
@@ -720,7 +788,11 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                     </div>
                     <GradeCard result={gradeResult} />
                     <DecisionCard result={decideResult} />
-                    <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                    {decideResult.decision === 'Exchange'
+                      ? <ExchangeCreditsCard exchangeCredits={decideResult.exchangeCredits ?? 0} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                      : (decideResult.decision === 'Donate' || decideResult.decision === 'Recycle')
+                        ? <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                        : null}
                     <RewardCard listing={listingResult} decideResult={decideResult} />
                   </>
                 )}
@@ -938,7 +1010,11 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
 
                     <GradeCard result={gradeResult} />
                     <DecisionCard result={decideResult} />
-                    <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                    {decideResult.decision === 'Exchange'
+                      ? <ExchangeCreditsCard exchangeCredits={decideResult.exchangeCredits ?? 0} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                      : (decideResult.decision === 'Donate' || decideResult.decision === 'Recycle')
+                        ? <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
+                        : null}
                     <RewardCard listing={listingResult} decideResult={decideResult} />
 
                     {listingResult && (

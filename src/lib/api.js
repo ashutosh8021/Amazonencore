@@ -1,6 +1,7 @@
+import { supabase } from './supabase.js'
+
 const BASE_URL = import.meta.env.VITE_API_URL || ''
 
-// Exported so the UI can show the actual URL in error messages
 export const API_BASE_URL = BASE_URL || window.location.origin
 
 async function post(endpoint, body, { requestId, writeToken } = {}) {
@@ -46,8 +47,14 @@ export const healthCheck = () =>
   fetch(`${BASE_URL}/health`).then(r => { if (!r.ok) throw new Error('unhealthy'); return r.json() })
 
 /* ── marketplace ─────────────────────────────────────────────────── */
-export const publishListing = (body, opts = {}) => {
-  const token = import.meta.env.VITE_MARKETPLACE_WRITE_TOKEN
-  return post('marketplace', body, { ...opts, writeToken: token || undefined })
+export async function publishListing(body, opts = {}) {
+  // Prefer the logged-in user's JWT; fall back to static write token.
+  let writeToken = import.meta.env.VITE_MARKETPLACE_WRITE_TOKEN
+  if (supabase) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.access_token) writeToken = session.access_token
+  }
+  return post('marketplace', body, { ...opts, writeToken: writeToken || undefined })
 }
+
 export const fetchUserListings = () => get('marketplace')

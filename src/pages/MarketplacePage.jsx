@@ -6,7 +6,7 @@ import Marketplace from '../components/Marketplace.jsx'
 export default function MarketplacePage({ onBack, nav = {}, searchQuery = '' }) {
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} />
+      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} onSignIn={nav.onSignIn} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}

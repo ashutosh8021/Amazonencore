@@ -6,17 +6,18 @@ import HowItWorks from '../components/HowItWorks.jsx'
 import AIDecide from '../components/AIDecide.jsx'
 import Impact from '../components/Impact.jsx'
 import Trust from '../components/Trust.jsx'
+import ReturnPrevention from '../components/ReturnPrevention.jsx'
 import FinalCTA from '../components/FinalCTA.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo, onMount, onSearch, cartCount = 0, onOpenCart }) {
+export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo, onMount, onSearch, onSignIn, cartCount = 0, onOpenCart }) {
   useEffect(() => {
     if (onMount) onMount()
   }, [onMount])
 
   return (
     <div style={{ color: '#0F1111', backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={onGetStarted} primaryLabel="Sell with Encore" onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onSearch={onSearch} cartCount={cartCount} onOpenCart={onOpenCart} />
+      <TopNav onPrimaryAction={onGetStarted} primaryLabel="Sell with Encore" onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onSearch={onSearch} cartCount={cartCount} onOpenCart={onOpenCart} onSignIn={onSignIn} />
       <SubNav
         onGetStarted={onGetStarted}
         onDemoMode={onDemoMode}
@@ -30,6 +31,7 @@ export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashbo
       <AIDecide />
       <Impact />
       <Trust />
+      <ReturnPrevention onGetStarted={onGetStarted} onMarketplace={onMarketplace} />
       <FinalCTA onGetStarted={onGetStarted} />
       <Footer />
     </div>

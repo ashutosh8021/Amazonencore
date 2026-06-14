@@ -4,8 +4,22 @@ import { storeImage } from '../lib/imageStorage.js'
 
 const router = Router()
 
-/* ── in-memory fallback if Supabase is not configured ────────────── */
 const fallbackStore = []
+
+/* Extract user_id from a Supabase JWT in the Authorization header */
+async function getUserId(req) {
+  const auth = req.headers.authorization || ''
+  if (!auth.startsWith('Bearer ')) return null
+  const token = auth.slice(7)
+  if (token.split('.').length !== 3) return null  // not a JWT
+  if (!supabase) return null
+  try {
+    const { data: { user } } = await supabase.auth.getUser(token)
+    return user?.id ?? null
+  } catch {
+    return null
+  }
+}
 
 /* POST /api/marketplace — save a new listing to Supabase */
 router.post('/', async (req, res) => {
@@ -16,13 +30,13 @@ router.post('/', async (req, res) => {
 
     if (!title) return res.status(400).json({ error: 'Title is required' })
 
-    // Try Supabase Storage first; fall back to inline data URI to avoid
-    // storing large base64 blobs as row values.
     let imageUrl = null
     if (imageBase64) {
       imageUrl = await storeImage(imageBase64, mediaType || 'image/jpeg')
         ?? `data:${mediaType || 'image/jpeg'};base64,${imageBase64}`
     }
+
+    const userId = await getUserId(req)
 
     const row = {
       title,
@@ -37,6 +51,7 @@ router.post('/', async (req, res) => {
       observations: observations || [],
       condition_summary: description || '',
       co2_saved_kg: co2SavedKg || 0,
+      user_id: userId,
     }
 
     if (supabase) {
@@ -50,11 +65,10 @@ router.post('/', async (req, res) => {
         return res.status(500).json({ error: error.message })
       }
 
-      console.log(`[marketplace] [${req.requestId}] Listed "${title}" to Supabase`)
+      console.log(`[marketplace] [${req.requestId}] Listed "${title}" by user ${userId ?? 'anonymous'}`)
       return res.json({ ok: true, listing: data[0] })
     }
 
-    // fallback: in-memory
     const item = { id: `local-${Date.now()}`, ...row, created_at: new Date().toISOString() }
     fallbackStore.unshift(item)
     console.log(`[marketplace] [${req.requestId}] Listed "${title}" in-memory (${fallbackStore.length} total)`)
@@ -65,7 +79,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-/* GET /api/marketplace — return all user-listed items */
+/* GET /api/marketplace — return all listings (public browse) */
 router.get('/', async (_req, res) => {
   try {
     if (supabase) {
@@ -73,7 +87,7 @@ router.get('/', async (_req, res) => {
         .from('marketplace_listings')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(50)
+        .limit(100)
 
       if (error) {
         console.error('[marketplace] Supabase fetch error:', error.message)
@@ -83,7 +97,6 @@ router.get('/', async (_req, res) => {
       return res.json({ listings: data })
     }
 
-    // fallback
     res.json({ listings: fallbackStore })
   } catch (err) {
     console.error('[marketplace] Error:', err.message)

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, ShieldCheck, X, BookOpen, CheckCircle2, AlertTriangle, ShoppingCart, Zap } from 'lucide-react'
+import { ChevronDown, ChevronUp, ShieldCheck, X, BookOpen, CheckCircle2, AlertTriangle, ShoppingCart, Zap, Package } from 'lucide-react'
 import { listings } from '../data/listings.js'
 import { fetchUserListings } from '../lib/api.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const CONDITION_ORDER = ['Like New', 'Very Good', 'Good', 'Acceptable']
 
@@ -109,10 +110,17 @@ function ConditionReport({ item, onClose }) {
 }
 
 export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow }) {
+  const { user } = useAuth() ?? {}
+  const [activeTab, setActiveTab] = useState('all') // 'all' | 'mine'
   const [activeGrade, setActiveGrade] = useState(null)
+  const [activeCategory, setActiveCategory] = useState(null)
+  const [savedCategory, setSavedCategory] = useState(null)
   const [openReportId, setOpenReportId] = useState(null)
   const [userItems, setUserItems] = useState([])
   const [addedId, setAddedId] = useState(null)
+
+  // Reset to "all" tab when user logs out
+  useEffect(() => { if (!user) setActiveTab('all') }, [user])
 
   function handleAddToCart(product) {
     setAddedId(product.id)
@@ -123,6 +131,12 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
   function handleBuyNow(product) {
     if (onBuyNow) onBuyNow(product)
   }
+
+  /* restore last-browsed category from localStorage */
+  useEffect(() => {
+    const saved = localStorage.getItem('encore_last_category')
+    if (saved) setSavedCategory(saved)
+  }, [])
 
   /* fetch user-listed items from Supabase on mount and every 5s */
   useEffect(() => {
@@ -148,6 +162,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
               observations: item.observations || [],
               summary: item.condition_summary || item.description || '',
             },
+            user_id: item.user_id ?? null,
             userListed: true,
           }))
           setUserItems(mapped)
@@ -161,20 +176,32 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
 
   const allListings = [...userItems, ...listings]
 
+  // "My listings" tab: items the current user submitted (have user_id matching)
+  const myListings = user
+    ? allListings.filter(l => l.user_id === user.id || l.userListed)
+    : []
+
+  const tabListings = activeTab === 'mine' ? myListings : allListings
+  const allCategories = [...new Set(tabListings.map(l => l.category).filter(Boolean))].sort()
+
   const q = searchQuery.trim().toLowerCase()
   const searchFiltered = q
-    ? allListings.filter(l =>
+    ? tabListings.filter(l =>
         l.title.toLowerCase().includes(q) ||
         l.category.toLowerCase().includes(q) ||
         l.conditionGrade.toLowerCase().includes(q) ||
         (l.conditionReport?.summary || '').toLowerCase().includes(q)
       )
-    : allListings
+    : tabListings
 
-  const counts = conditionCounts(searchFiltered)
-  const filtered = activeGrade
-    ? searchFiltered.filter((l) => l.conditionGrade === activeGrade)
+  const categoryFiltered = activeCategory
+    ? searchFiltered.filter(l => l.category === activeCategory)
     : searchFiltered
+
+  const counts = conditionCounts(categoryFiltered)
+  const filtered = activeGrade
+    ? categoryFiltered.filter(l => l.conditionGrade === activeGrade)
+    : categoryFiltered
 
   function toggleReport(id) {
     setOpenReportId((prev) => (prev === id ? null : id))
@@ -258,6 +285,88 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
 
             {/* Listings */}
             <div className="p-5 md:p-6">
+              {/* All / My listings tab strip — visible only when logged in */}
+              {user && (
+                <div className="flex gap-2 mb-5">
+                  {[['all', 'All listings'], ['mine', 'My listings']].map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => { setActiveTab(key); setActiveGrade(null); setActiveCategory(null) }}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-colors"
+                      style={{
+                        backgroundColor: activeTab === key ? '#131921' : 'white',
+                        color: activeTab === key ? 'white' : '#565959',
+                        borderColor: activeTab === key ? '#131921' : '#D5D9D9',
+                      }}
+                    >
+                      {key === 'mine' && <Package size={13} />}
+                      {label}
+                      {key === 'mine' && myListings.length > 0 && (
+                        <span
+                          className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                          style={{ backgroundColor: '#FF9900', color: '#0F1111' }}
+                        >
+                          {myListings.length}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Category chips — personalized if localStorage has a prior category */}
+              {allCategories.length > 0 && (
+                <div className="mb-5">
+                  {savedCategory && !activeCategory && (
+                    <p className="text-xs mb-2 text-[#565959]">
+                      <span className="font-semibold" style={{ color: '#007185' }}>Recommended for you</span>
+                      {' '}— based on your interest in {savedCategory}
+                    </p>
+                  )}
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory(null)}
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
+                      style={{
+                        borderColor: !activeCategory ? '#FF9900' : '#D5D9D9',
+                        backgroundColor: !activeCategory ? '#fff8e0' : 'white',
+                        color: !activeCategory ? '#c45500' : '#565959',
+                      }}
+                    >
+                      All
+                    </button>
+                    {allCategories.map(cat => {
+                      const isActive = activeCategory === cat
+                      const isSaved = savedCategory === cat && !activeCategory
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => {
+                            const next = isActive ? null : cat
+                            setActiveCategory(next)
+                            if (next) {
+                              localStorage.setItem('encore_last_category', next)
+                              setSavedCategory(next)
+                            }
+                          }}
+                          className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
+                          style={{
+                            borderColor: isActive ? '#FF9900' : isSaved ? '#007185' : '#D5D9D9',
+                            backgroundColor: isActive ? '#fff8e0' : isSaved ? '#e0f0f3' : 'white',
+                            color: isActive ? '#c45500' : isSaved ? '#007185' : '#565959',
+                          }}
+                        >
+                          {cat}{isSaved ? ' ★' : ''}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
                 <div>
                   <p className="text-sm text-[#565959]">
@@ -394,6 +503,14 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow })
                   </div>
                 )
               })()}
+
+              {activeTab === 'mine' && myListings.length === 0 && (
+                <div className="py-16 text-center">
+                  <Package size={40} className="mx-auto mb-4" style={{ color: '#D5D9D9' }} />
+                  <p className="text-lg font-semibold text-[#0F1111] mb-1">No listings yet</p>
+                  <p className="text-sm text-[#565959]">Items you list through Encore will appear here.</p>
+                </div>
+              )}
 
               <div className="divide-y" style={{ borderColor: '#E7E7E7' }}>
                 {filtered.map((product) => {

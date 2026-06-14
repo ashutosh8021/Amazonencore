@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import {
-  AlertCircle, ArrowLeft, Award, BookOpen, Camera, CheckCircle2,
+  AlertCircle, ArrowLeft, ArrowLeftRight, Award, BookOpen, Camera, CheckCircle2,
   Heart, ImagePlus, Leaf, Loader2, Package, Play, RotateCcw,
   ShieldCheck, ShoppingBag, TrendingUp, Upload, Users, Wrench, Zap,
 } from 'lucide-react'
@@ -26,10 +26,11 @@ const GRADE_CFG = {
 }
 
 const DECISION_CFG = {
-  'Resell':    { color: '#067D62', bg: '#e6f4ea', Icon: TrendingUp, label: 'Listed for sale' },
-  'Refurbish': { color: '#007185', bg: '#e0f0f3', Icon: Wrench,     label: 'Prepared for refurbishment' },
-  'Donate':    { color: '#FF9900', bg: '#fff8e0', Icon: Heart,       label: 'Routed to donation' },
-  'Recycle':   { color: '#555555', bg: '#f3f3f3', Icon: Leaf,        label: 'Sent to responsible recycling' },
+  'Resell':    { color: '#067D62', bg: '#e6f4ea', Icon: TrendingUp,     label: 'Listed for sale' },
+  'Refurbish': { color: '#007185', bg: '#e0f0f3', Icon: Wrench,         label: 'Prepared for refurbishment' },
+  'Donate':    { color: '#FF9900', bg: '#fff8e0', Icon: Heart,           label: 'Routed to donation' },
+  'Recycle':   { color: '#555555', bg: '#f3f3f3', Icon: Leaf,           label: 'Sent to responsible recycling' },
+  'Exchange':  { color: '#007185', bg: '#e0f0f3', Icon: ArrowLeftRight, label: 'Trade-in for Amazon Pay credit' },
 }
 
 /* ── helpers ──────────────────────────────────────────────────────── */
@@ -738,7 +739,7 @@ export default function Personas({ onBack, nav = {}, onScrollTo }) {
 
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} />
+      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}
