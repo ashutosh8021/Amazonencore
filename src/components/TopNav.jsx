@@ -50,12 +50,10 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
                 marginTop: '2px',
               }}>.in</span>
             </div>
-            {/* Smile arc + arrowhead — natural aspect ratio, no preserveAspectRatio distortion */}
-            <svg viewBox="0 0 124 15" width="124" height="11" style={{ display: 'block', marginTop: '2px' }} aria-hidden="true">
-              {/* Arc: left edge → dip → ends just before arrowhead */}
-              <path d="M 4 4 Q 60 15 108 4" stroke="#FF9900" strokeWidth="4" fill="none" strokeLinecap="round"/>
-              {/* Filled arrowhead pointing right, tip at x=112 */}
-              <path d="M 103 0 L 114 4 L 105 10 Z" fill="#FF9900"/>
+            {/* Smile: starts under 'a', arrowhead lands just past 'z' (4th letter) */}
+            <svg viewBox="0 0 82 15" width="82" height="11" style={{ display: 'block', marginTop: '2px' }} aria-hidden="true">
+              <path d="M 4 4 Q 34 14 63 4" stroke="#FF9900" strokeWidth="4" fill="none" strokeLinecap="round"/>
+              <path d="M 57 0 L 68 4 L 59 10 Z" fill="#FF9900"/>
             </svg>
           </a>
 
