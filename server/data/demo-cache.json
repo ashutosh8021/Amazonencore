@@ -1,0 +1,149 @@
+[
+  {
+    "name": "AirPods Pro",
+    "grade": {
+      "product": "AirPods Pro",
+      "category": "Electronics",
+      "grade": "Very Good",
+      "confidence": 82,
+      "observations": [
+        "minor scuffs on charging case",
+        "earbuds fully functional with clear audio",
+        "includes original charging cable",
+        "silicone tips show light wear"
+      ],
+      "conditionReport": "AirPods Pro in very good condition with minor cosmetic wear on charging case. Earbuds and audio performance fully intact.",
+      "co2SavedKgEstimate": 17.1
+    },
+    "decide": {
+      "decision": "Resell",
+      "expectedResaleValue": 13695,
+      "processingCost": 400,
+      "netResell": 13295,
+      "greenCredits": 171,
+      "reason": "Resale recovers ₹13695 against ₹400 in costs, leaving a net of ₹13295."
+    },
+    "listing": {
+      "title": "AirPods Pro - Very Good condition, minor case scuffs",
+      "description": "Fully functional AirPods Pro with minor cosmetic scuffs on charging case. Includes cable. Sound quality and ANC intact.",
+      "conditionLabel": "Very Good"
+    }
+  },
+  {
+    "name": "Running Shoes",
+    "grade": {
+      "product": "Running Shoes",
+      "category": "Footwear",
+      "grade": "Good",
+      "confidence": 75,
+      "observations": [
+        "visible sole wear on heel area",
+        "upper mesh intact but lightly discolored",
+        "laces fraying at tips",
+        "insole compressed from use"
+      ],
+      "conditionReport": "Running shoes in good condition with moderate sole wear and light discoloration on upper mesh. Structurally sound for continued use.",
+      "co2SavedKgEstimate": 1.9
+    },
+    "decide": {
+      "decision": "Donate",
+      "expectedResaleValue": 200,
+      "processingCost": 250,
+      "netResell": -50,
+      "greenCredits": 19,
+      "reason": "Relisting recovers ₹200 but costs ₹250 — a ₹50 loss, so donating is the better outcome."
+    },
+    "listing": null
+  },
+  {
+    "name": "Kindle",
+    "grade": {
+      "product": "Kindle Paperwhite",
+      "category": "Electronics",
+      "grade": "Like New",
+      "confidence": 91,
+      "observations": [
+        "screen free of scratches",
+        "body shows no visible wear",
+        "battery holds full charge",
+        "original packaging included"
+      ],
+      "conditionReport": "Kindle Paperwhite in like-new condition with no visible wear. Screen pristine, battery healthy, includes original packaging.",
+      "co2SavedKgEstimate": 17.1
+    },
+    "decide": {
+      "decision": "Resell",
+      "expectedResaleValue": 5600,
+      "processingCost": 400,
+      "netResell": 5200,
+      "greenCredits": 171,
+      "reason": "Resale recovers ₹5600 against ₹400 in costs, leaving a net of ₹5200."
+    },
+    "listing": {
+      "title": "Kindle Paperwhite - Like New, pristine screen",
+      "description": "Like-new Kindle Paperwhite with zero scratches, healthy battery, and original packaging. Ready to read out of the box.",
+      "conditionLabel": "Like New"
+    }
+  },
+  {
+    "name": "Laptop",
+    "grade": {
+      "product": "Dell Inspiron 15 Laptop",
+      "category": "Electronics",
+      "grade": "Very Good",
+      "confidence": 78,
+      "observations": [
+        "minor scratches on lid",
+        "keyboard keys fully responsive",
+        "screen has no dead pixels",
+        "battery reports 88% health",
+        "one USB port has slight wobble"
+      ],
+      "conditionReport": "Dell Inspiron 15 in very good condition. Minor lid scratches and one slightly loose USB port, but screen, keyboard, and overall performance are solid.",
+      "co2SavedKgEstimate": 17.1
+    },
+    "decide": {
+      "decision": "Resell",
+      "expectedResaleValue": 24750,
+      "processingCost": 400,
+      "netResell": 24350,
+      "greenCredits": 171,
+      "reason": "Resale recovers ₹24750 against ₹400 in costs, leaving a net of ₹24350."
+    },
+    "listing": {
+      "title": "Dell Inspiron 15 Laptop - Very Good, minor lid scratches",
+      "description": "Very good Dell Inspiron 15 with minor lid scratches and one slightly loose USB port. Screen, keyboard, and battery all perform well.",
+      "conditionLabel": "Very Good"
+    }
+  },
+  {
+    "name": "Cotton T-Shirt",
+    "grade": {
+      "product": "Cotton T-Shirt",
+      "category": "Apparel",
+      "grade": "Like New",
+      "confidence": 88,
+      "observations": [
+        "no stains or discoloration",
+        "fabric shows no pilling",
+        "print intact with vibrant colors",
+        "tags still attached"
+      ],
+      "conditionReport": "Cotton t-shirt in like-new condition with tags still attached. Fabric pristine, print vibrant, no signs of wash or wear.",
+      "co2SavedKgEstimate": 3.1
+    },
+    "decide": {
+      "decision": "Resell",
+      "expectedResaleValue": 280,
+      "processingCost": 180,
+      "netResell": 100,
+      "greenCredits": 31,
+      "reason": "Resale recovers ₹280 against ₹180 in costs, leaving a net of ₹100."
+    },
+    "listing": {
+      "title": "Cotton T-Shirt - Like New with tags, no wear",
+      "description": "Brand-new cotton t-shirt with tags attached. No stains, pilling, or fading. Vibrant print, ready to wear.",
+      "conditionLabel": "Like New"
+    }
+  }
+]

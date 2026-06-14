@@ -1,0 +1,72 @@
+{
+  "Electronics": {
+    "processingCost": 400,
+    "refurbishCost": 600,
+    "carbonSavedKg": 18,
+    "returnShippingCo2Kg": 0.9,
+    "_note": "High carbon: manufacturing a phone/laptop emits ~70kg CO2; saving 18kg is conservative refurb credit. Return shipping ~0.9kg CO2 (heavier parcel, longer avg distance)."
+  },
+  "Footwear": {
+    "processingCost": 250,
+    "refurbishCost": 150,
+    "carbonSavedKg": 2.4,
+    "returnShippingCo2Kg": 0.5,
+    "_note": "Shoe manufacture ~14kg CO2; 2.4kg saved by diverting from landfill. Return shipping ~0.5kg CO2 per parcel."
+  },
+  "Apparel": {
+    "processingCost": 180,
+    "refurbishCost": 120,
+    "carbonSavedKg": 3.5,
+    "returnShippingCo2Kg": 0.4,
+    "_note": "Textile production ~27kg CO2 per kg fabric; garment diversion saves ~3.5kg. Lighter parcel: 0.4kg return shipping CO2."
+  },
+  "Home & Kitchen": {
+    "processingCost": 300,
+    "refurbishCost": 350,
+    "carbonSavedKg": 8,
+    "returnShippingCo2Kg": 1.2,
+    "_note": "Appliance manufacture is energy-intensive. Bulkier return parcel: ~1.2kg return shipping CO2."
+  },
+  "Books": {
+    "processingCost": 80,
+    "refurbishCost": 40,
+    "carbonSavedKg": 1.2,
+    "returnShippingCo2Kg": 0.3,
+    "_note": "Paper production ~1kg CO2 per book. Light parcel: ~0.3kg return shipping CO2."
+  },
+  "Toys": {
+    "processingCost": 150,
+    "refurbishCost": 100,
+    "carbonSavedKg": 2.0,
+    "returnShippingCo2Kg": 0.5,
+    "_note": "Mixed plastics manufacture. Safety check required. ~0.5kg return shipping CO2."
+  },
+  "Sports": {
+    "processingCost": 200,
+    "refurbishCost": 180,
+    "carbonSavedKg": 4.0,
+    "returnShippingCo2Kg": 0.7,
+    "_note": "Equipment varies widely; mid-range processing and shipping costs."
+  },
+  "Beauty": {
+    "processingCost": 120,
+    "refurbishCost": 0,
+    "carbonSavedKg": 1.5,
+    "returnShippingCo2Kg": 0.3,
+    "_note": "Sealed/unopened only. No refurbish path. Light parcel: ~0.3kg return CO2."
+  },
+  "Automotive": {
+    "processingCost": 500,
+    "refurbishCost": 800,
+    "carbonSavedKg": 25,
+    "returnShippingCo2Kg": 1.5,
+    "_note": "High carbon saving for parts diversion. Heavy return parcel: ~1.5kg CO2."
+  },
+  "default": {
+    "processingCost": 250,
+    "refurbishCost": 200,
+    "carbonSavedKg": 5,
+    "returnShippingCo2Kg": 0.5,
+    "_note": "Fallback for uncategorised items."
+  }
+}

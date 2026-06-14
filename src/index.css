@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #eaeded;
+}
+
+body {
+  margin: 0;
+  background: #eaeded;
+  color: #0F1111;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Amazon Ember", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── micro-animations ──────────────────────────────────────────── */
+
+@keyframes encore-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes encore-fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes encore-scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes encore-slide-right {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes encore-count-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes encore-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes encore-bar-grow {
+  from { width: 0%; }
+}
+
+@keyframes encore-donut-draw {
+  from { stroke-dashoffset: 377; }
+}
+
+@keyframes encore-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 153, 0, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 153, 0, 0.12); }
+}
+
+@keyframes encore-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+/* utility classes */
+.encore-fade-in {
+  animation: encore-fade-in 0.4s ease-out both;
+}
+
+.encore-fade-in-up {
+  animation: encore-fade-in-up 0.5s ease-out both;
+}
+
+.encore-scale-in {
+  animation: encore-scale-in 0.35s ease-out both;
+}
+
+.encore-slide-right {
+  animation: encore-slide-right 0.4s ease-out both;
+}
+
+.encore-shimmer {
+  background: linear-gradient(90deg, #f3f3f3 25%, #e8e8e8 50%, #f3f3f3 75%);
+  background-size: 200% 100%;
+  animation: encore-shimmer 1.5s infinite;
+}
+
+.encore-glow {
+  animation: encore-glow-pulse 2s ease-in-out infinite;
+}
+
+.encore-float {
+  animation: encore-float 3s ease-in-out infinite;
+}
+
+/* stagger children animations */
+.encore-stagger > * {
+  animation: encore-fade-in-up 0.4s ease-out both;
+}
+.encore-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.encore-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.encore-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.encore-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.encore-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.encore-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.encore-stagger > *:nth-child(7) { animation-delay: 360ms; }
+.encore-stagger > *:nth-child(8) { animation-delay: 420ms; }
+.encore-stagger > *:nth-child(9) { animation-delay: 480ms; }
+.encore-stagger > *:nth-child(10) { animation-delay: 540ms; }
+
+/* card hover lift */
+.encore-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.encore-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 17, 17, 0.08);
+}
+
+/* smooth scrollbar for feeds */
+.encore-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.encore-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.encore-scroll::-webkit-scrollbar-thumb {
+  background: #D5D9D9;
+  border-radius: 4px;
+}
+.encore-scroll::-webkit-scrollbar-thumb:hover {
+  background: #879596;
+}

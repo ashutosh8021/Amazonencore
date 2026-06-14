@@ -1,0 +1,58 @@
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const categories = require('../data/categories.json')
+
+const resalePctByGrade = {
+  'Like New': 0.70,
+  'Very Good': 0.55,
+  'Good': 0.40,
+  'Acceptable': 0.25,
+  'Not Sellable': 0,
+}
+
+function fmt(n) {
+  return Math.round(n)
+}
+
+export function decide({ originalPrice, grade, category, confidence }) {
+  const cats = categories[category] ?? categories['default']
+  const { processingCost, refurbishCost, carbonSavedKg, returnShippingCo2Kg = 0.5 } = cats
+
+  const resalePct = resalePctByGrade[grade] ?? 0
+  const expectedResaleValue = fmt(originalPrice * resalePct)
+  const netResell = fmt(expectedResaleValue - processingCost)
+  const canRefurbish = grade === 'Good' || grade === 'Acceptable'
+  const netRefurbish = canRefurbish ? fmt(expectedResaleValue - processingCost - refurbishCost) : -Infinity
+
+  // Net carbon = gross saving minus the return-shipping emissions
+  const netCarbonSavedKg = Math.max(0, carbonSavedKg - returnShippingCo2Kg)
+  const greenCredits = Math.max(1, Math.round(netCarbonSavedKg * 10))
+
+  let decision
+  let reason
+
+  if (grade === 'Not Sellable') {
+    decision = 'Recycle'
+    reason = `Item is not sellable in any condition. Routing to recycling saves ${netCarbonSavedKg.toFixed(1)} kg CO2 net of return shipping.`
+  } else if (netResell < 0 && netRefurbish < 0) {
+    decision = 'Donate'
+    reason = `Relisting recovers ₹${expectedResaleValue} but costs ₹${processingCost} — a ₹${Math.abs(netResell)} loss, so donating is the better outcome.`
+  } else if (canRefurbish && netRefurbish > netResell) {
+    decision = 'Refurbish'
+    reason = `Refurbishing (net ₹${netRefurbish}) beats direct resale (net ₹${netResell}) after a ₹${refurbishCost} refurb investment.`
+  } else {
+    decision = 'Resell'
+    reason = `Resale recovers ₹${expectedResaleValue} against ₹${processingCost} in costs, leaving a net of ₹${netResell}.`
+  }
+
+  return {
+    decision,
+    expectedResaleValue,
+    processingCost,
+    netResell,
+    greenCredits,
+    netCarbonSavedKg,
+    returnShippingCo2Kg,
+    reason,
+  }
+}
