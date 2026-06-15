@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  AlertCircle, AlertTriangle, ArrowLeft, ArrowLeftRight, Award, CheckCircle2, Heart, Leaf, Loader2, Plus, RotateCcw,
+  AlertCircle, AlertTriangle, ArrowLeft, ArrowLeftRight, Award, CheckCircle2, Clock, Heart, Leaf, Loader2, MapPin, Plus, RotateCcw,
   ShieldCheck, Shirt, Smartphone, TrendingUp, Upload, Wrench, X, Zap,
 } from 'lucide-react'
 import TopNav from '../components/TopNav.jsx'
@@ -515,6 +515,81 @@ function RewardCard({ listing, decideResult }) {
   )
 }
 
+function CampusCard({ decideResult, listingResult, originalPrice, onMarketplace }) {
+  const isResell = decideResult.decision === 'Resell'
+  const basePrice = isResell
+    ? Number(listingResult?.suggestedPrice || decideResult.expectedResaleValue || 0)
+    : Number(originalPrice || decideResult.expectedResaleValue || 0)
+  const campusPrice = Math.round(Math.max(basePrice * (isResell ? 0.82 : 0.35), 50))
+  const discount = basePrice > 0 ? Math.round((1 - campusPrice / basePrice) * 100) : 0
+
+  return (
+    <div className="rounded-md border p-5 flex flex-col gap-4" style={{ borderColor: '#067D62', backgroundColor: '#f0faf5' }}>
+      <div className="flex items-center gap-2">
+        <MapPin size={16} style={{ color: '#067D62' }} />
+        <span className="font-bold text-base" style={{ color: '#0F1111' }}>Listed on Encore Campus</span>
+        <span
+          className="ml-auto text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1"
+          style={{ backgroundColor: '#067D62', color: 'white' }}
+        >
+          <Clock size={11} />
+          48 hrs
+        </span>
+      </div>
+
+      <div className="rounded-md p-4" style={{ backgroundColor: '#e6f4ea', border: '1px solid #B2DFDB' }}>
+        <p className="text-sm font-semibold mb-1" style={{ color: '#067D62' }}>
+          Your item is live on your campus feed right now
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: '#565959' }}>
+          {isResell
+            ? 'We listed it at a campus-only discount. If someone nearby buys it within 48 hours, the item never leaves campus and you get paid — no shipping, no warehouse.'
+            : 'Even though relisting is not worth it at full cost, someone nearby may want it at a campus price. If they buy within 48 hours, you earn a small payout and skip the pickup entirely.'}
+        </p>
+      </div>
+
+      <div className="flex items-end gap-4 flex-wrap">
+        <div>
+          <p className="text-xs mb-0.5" style={{ color: '#879596' }}>Campus price</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-extrabold" style={{ color: '#0F1111' }}>
+              ₹{campusPrice.toLocaleString('en-IN')}
+            </span>
+            {discount > 5 && (
+              <span className="text-sm font-bold" style={{ color: '#CC0C39' }}>{discount}% off</span>
+            )}
+          </div>
+        </div>
+        <div className="flex-1 min-w-[140px]">
+          <div className="flex items-center justify-between text-xs mb-1">
+            <span style={{ color: '#565959' }}>Time remaining</span>
+            <span className="font-semibold" style={{ color: '#067D62' }}>47h 58m</span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#B2DFDB' }}>
+            <div className="h-full rounded-full" style={{ width: '99%', backgroundColor: '#067D62' }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 text-xs" style={{ color: '#879596' }}>
+        <CheckCircle2 size={12} style={{ color: '#067D62' }} />
+        If no one buys within 48 hours, a rider picks it up as normal — nothing changes for you.
+      </div>
+
+      {onMarketplace && (
+        <button
+          type="button"
+          onClick={onMarketplace}
+          className="text-sm font-semibold hover:underline text-left"
+          style={{ color: '#007185' }}
+        >
+          View on campus feed →
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo }) {
   const [dragOver, setDragOver]       = useState(false)
   const [file, setFile]               = useState(null)
@@ -834,6 +909,14 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                         ? <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
                         : null}
                     <RewardCard listing={listingResult} decideResult={decideResult} />
+                    {(decideResult.decision === 'Resell' || decideResult.decision === 'Donate') && (
+                      <CampusCard
+                        decideResult={decideResult}
+                        listingResult={listingResult}
+                        originalPrice={DEMO_CONFIG.price}
+                        onMarketplace={nav.onMarketplace}
+                      />
+                    )}
                   </>
                 )}
               </>
@@ -1042,6 +1125,15 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                         ? <GreenCreditsCard greenCredits={decideResult.greenCredits} netCarbonSavedKg={decideResult.netCarbonSavedKg} />
                         : null}
                     <RewardCard listing={listingResult} decideResult={decideResult} />
+
+                    {(decideResult.decision === 'Resell' || decideResult.decision === 'Donate') && (
+                      <CampusCard
+                        decideResult={decideResult}
+                        listingResult={listingResult}
+                        originalPrice={price ? Number(price) : 0}
+                        onMarketplace={nav.onMarketplace}
+                      />
+                    )}
 
                     {listingResult && (
                       <ListingPreview
