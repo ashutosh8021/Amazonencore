@@ -47,7 +47,7 @@ const DEMO_CONFIG = {
   name: 'Running shoe (used)',
   price: 500,
   category: 'Footwear',
-  previewUrl: 'https://picsum.photos/seed/encore-shoe-demo/600/600',
+  previewUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
 }
 
 const DEMO_FALLBACK = {
