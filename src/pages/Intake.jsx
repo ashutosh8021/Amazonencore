@@ -823,185 +823,129 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                   </>
                 ) : !hasResult ? (
                   <>
+                    {/* Single unified card: photos + details together */}
                     <div className="rounded-md border bg-white p-5 md:p-6" style={{ borderColor: '#D5D9D9' }}>
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-2">Step 1</p>
-                      <h2 className="text-2xl font-bold text-[#0F1111] mb-2">Upload a product photo</h2>
+                      <h2 className="text-2xl font-bold text-[#0F1111] mb-1">List your product</h2>
+                      <p className="text-sm text-[#565959] mb-5">Add up to 4 photos so buyers can see every angle, then fill in a few details. AI grades the condition after you hit "Grade this item".</p>
 
-                      <div
-                        className="rounded-md border-2 border-dashed p-8 flex flex-col items-center gap-3 transition-colors"
-                        style={{
-                          borderColor: dragOver ? '#FF9900' : '#D5D9D9',
-                          backgroundColor: dragOver ? '#fff8f0' : 'white',
-                          cursor: file ? 'default' : 'pointer',
-                        }}
-                        onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-                        onDragLeave={() => setDragOver(false)}
-                        onDrop={onDrop}
-                        onClick={() => !file && inputRef.current?.click()}
-                      >
-                        <input
-                          ref={inputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleFile(e.target.files[0])}
-                        />
+                      {/* Hidden file inputs */}
+                      <input ref={inputRef} type="file" accept="image/*" className="hidden"
+                        onChange={(e) => handleFile(e.target.files[0])} />
+                      <input ref={extraInputRef} type="file" accept="image/*" className="hidden"
+                        onChange={(e) => handleExtraFile(e.target.files[0])} />
 
-                        {preview ? (
-                          <div className="flex flex-col items-center gap-3 w-full">
-                            <div className="relative inline-block">
-                              <img
-                                src={preview}
-                                alt="preview"
-                                className="h-56 rounded-lg object-contain max-w-full"
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setFile(null)
-                                  setPreview(null)
-                                }}
-                                className="absolute -top-2 -right-2 bg-white rounded-full border shadow-sm p-0.5 hover:bg-gray-50"
-                                style={{ borderColor: '#D5D9D9' }}
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
-                            <p className="text-sm text-[#565959]">
-                              {file.name} · {(file.size / 1024).toFixed(0)} KB
-                            </p>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
-                              className="text-sm font-semibold underline"
-                              style={{ color: '#007185' }}
-                            >
-                              Change photo
-                            </button>
+                      {/* 4-slot photo grid */}
+                      <div className="mb-5">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-3">
+                          Product photos <span className="font-normal normal-case tracking-normal">(up to 4 · first photo is your main image)</span>
+                        </p>
+                        <div
+                          className="grid gap-3"
+                          style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
+                        >
+                          {/* Slot 1 — main photo, drag-drop enabled */}
+                          <div
+                            className="rounded-md border-2 border-dashed aspect-square flex flex-col items-center justify-center cursor-pointer transition-colors relative overflow-hidden"
+                            style={{ borderColor: dragOver ? '#FF9900' : (preview ? '#FF9900' : '#D5D9D9'), backgroundColor: dragOver ? '#fff8f0' : (preview ? '#F7F8F8' : 'white') }}
+                            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                            onDragLeave={() => setDragOver(false)}
+                            onDrop={onDrop}
+                            onClick={() => inputRef.current?.click()}
+                          >
+                            {preview ? (
+                              <>
+                                <img src={preview} alt="main" className="w-full h-full object-cover" />
+                                <button type="button"
+                                  onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(null) }}
+                                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/90 border flex items-center justify-center shadow"
+                                  style={{ borderColor: '#D5D9D9' }}>
+                                  <X size={11} />
+                                </button>
+                                <span className="absolute bottom-1 left-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                                  style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: '#fff' }}>Main</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload size={20} style={{ color: '#879596' }} />
+                                <span className="text-[10px] text-[#879596] mt-1 text-center px-1">Main photo</span>
+                              </>
+                            )}
                           </div>
-                        ) : (
-                          <>
-                            <div
-                              className="w-14 h-14 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: '#131921' }}
-                            >
-                              <Upload size={24} style={{ color: '#FF9900' }} />
-                            </div>
-                            <p className="font-semibold text-base text-[#0F1111] text-center max-w-xs">
-                              Snap or drop a photo — Encore grades it, decides its best second life, and writes the listing.
-                            </p>
-                            <p className="text-sm text-[#565959]">JPG, PNG, WEBP · under 4 MB</p>
-                            <div className="flex flex-wrap justify-center gap-2 mt-1">
-                              {CATEGORY_HINTS.map(({ Icon, label }) => (
-                                <span
-                                  key={label}
-                                  className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border"
-                                  style={{ borderColor: '#D5D9D9', color: '#565959', backgroundColor: '#F7F8F8' }}
-                                >
-                                  <Icon size={12} />
-                                  {label}
-                                </span>
-                              ))}
-                            </div>
-                          </>
+
+                          {/* Slots 2-4 — extra photos */}
+                          {[0, 1, 2].map((idx) => {
+                            const img = extraImages[idx]
+                            const enabled = !!preview
+                            return (
+                              <div key={idx}
+                                className="rounded-md border-2 border-dashed aspect-square flex flex-col items-center justify-center transition-colors relative overflow-hidden"
+                                style={{
+                                  borderColor: img ? '#007185' : '#D5D9D9',
+                                  backgroundColor: img ? '#F7F8F8' : (enabled ? 'white' : '#FAFAFA'),
+                                  cursor: enabled ? 'pointer' : 'not-allowed',
+                                  opacity: enabled ? 1 : 0.45,
+                                }}
+                                onClick={() => enabled && !img && extraInputRef.current?.click()}
+                              >
+                                {img ? (
+                                  <>
+                                    <img src={img.preview} alt={`photo ${idx + 2}`} className="w-full h-full object-cover" />
+                                    <button type="button"
+                                      onClick={(e) => { e.stopPropagation(); removeExtraImage(idx) }}
+                                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/90 border flex items-center justify-center shadow"
+                                      style={{ borderColor: '#D5D9D9' }}>
+                                      <X size={11} />
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus size={18} style={{ color: '#C0C6C6' }} />
+                                    <span className="text-[10px] text-[#C0C6C6] mt-1">Photo {idx + 2}</span>
+                                  </>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                        {!preview && (
+                          <p className="text-xs text-[#565959] mt-2">JPG, PNG, WEBP · under 4 MB each</p>
+                        )}
+                        {preview && (
+                          <p className="text-xs mt-2" style={{ color: '#007185' }}>
+                            {1 + extraImages.length} photo{extraImages.length > 0 ? 's' : ''} added
+                            {extraImages.length < 3 ? ' — click any empty slot to add more' : ' — maximum reached'}
+                          </p>
                         )}
                       </div>
-                    </div>
 
-                    {/* Extra photos — shown only after main photo selected */}
-                    {preview && !demoMode && (
-                      <div className="rounded-md border bg-white p-5" style={{ borderColor: '#D5D9D9' }}>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-1">Optional</p>
-                        <h2 className="text-base font-bold text-[#0F1111] mb-1">Add more photos</h2>
-                        <p className="text-sm text-[#565959] mb-4">Show buyers every angle — up to 3 additional photos.</p>
-                        <input
-                          ref={extraInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleExtraFile(e.target.files[0])}
-                        />
-                        <div className="flex flex-wrap gap-3">
-                          {extraImages.map((img, idx) => (
-                            <div key={idx} className="relative w-20 h-20">
-                              <img src={img.preview} alt={`extra ${idx+1}`} className="w-20 h-20 object-cover rounded-md border" style={{ borderColor: '#D5D9D9' }} />
-                              <button
-                                type="button"
-                                onClick={() => removeExtraImage(idx)}
-                                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border shadow flex items-center justify-center"
-                                style={{ borderColor: '#D5D9D9' }}
-                              >
-                                <X size={11} />
-                              </button>
-                            </div>
-                          ))}
-                          {extraImages.length < 3 && (
-                            <button
-                              type="button"
-                              onClick={() => extraInputRef.current?.click()}
-                              className="w-20 h-20 rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors"
-                              style={{ borderColor: '#D5D9D9' }}
-                            >
-                              <Plus size={18} style={{ color: '#879596' }} />
-                              <span className="text-[10px] text-[#879596]">Add photo</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    <div
-                      className="bg-white rounded-md border p-5 md:p-6 flex flex-col gap-4"
-                      style={{ borderColor: '#D5D9D9' }}
-                    >
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-1">Step 2</p>
-                        <h2 className="text-2xl font-bold text-[#0F1111] mb-2">Optional listing context</h2>
-                        <p className="text-sm text-[#565959]">
-                          Product name, price, and category help the condition grade and resale math stay grounded.
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1">
-                          <label className="text-xs font-medium text-[#565959]">Product name</label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Nike Air Max"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="border rounded-md px-3 py-2.5 text-sm outline-none"
-                            style={{ borderColor: '#D5D9D9' }}
-                          />
+                      {/* Product details */}
+                      <div className="border-t pt-5 flex flex-col gap-4" style={{ borderColor: '#E3E6E6' }}>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596]">Product details <span className="font-normal normal-case tracking-normal">(optional — helps AI grade more accurately)</span></p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-xs font-medium text-[#565959]">Product name</label>
+                            <input type="text" placeholder="e.g. HP Laptop 15s"
+                              value={name} onChange={(e) => setName(e.target.value)}
+                              className="border rounded-md px-3 py-2.5 text-sm outline-none"
+                              style={{ borderColor: '#D5D9D9' }} />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-xs font-medium text-[#565959]">Original price (₹)</label>
+                            <input type="number" placeholder="e.g. 45000"
+                              value={price} onChange={(e) => setPrice(e.target.value)} min="0"
+                              className="border rounded-md px-3 py-2.5 text-sm outline-none"
+                              style={{ borderColor: '#D5D9D9' }} />
+                          </div>
                         </div>
                         <div className="flex flex-col gap-1">
-                          <label className="text-xs font-medium text-[#565959]">Original price (₹)</label>
-                          <input
-                            type="number"
-                            placeholder="e.g. 500"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            min="0"
-                            className="border rounded-md px-3 py-2.5 text-sm outline-none"
-                            style={{ borderColor: '#D5D9D9' }}
-                          />
+                          <label className="text-xs font-medium text-[#565959]">Category</label>
+                          <select value={category} onChange={(e) => setCategory(e.target.value)}
+                            className="border rounded-md px-3 py-2.5 text-sm outline-none bg-white"
+                            style={{ borderColor: '#D5D9D9' }}>
+                            <option value="">Auto-detect from image</option>
+                            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                          </select>
                         </div>
-                      </div>
-
-                      <div className="flex flex-col gap-1">
-                        <label className="text-xs font-medium text-[#565959]">Category</label>
-                        <select
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
-                          className="border rounded-md px-3 py-2.5 text-sm outline-none bg-white"
-                          style={{ borderColor: '#D5D9D9' }}
-                        >
-                          <option value="">Auto-detect from image</option>
-                          {CATEGORIES.map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                          ))}
-                        </select>
                       </div>
                     </div>
 
