@@ -136,11 +136,11 @@ function ConditionReport({ item, onClose }) {
   )
 }
 
-export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, onProductClick, initialTab = 'all' }) {
+export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, onProductClick, initialTab = 'all', initialCategory = null }) {
   const { user } = useAuth() ?? {}
   const [activeTab, setActiveTab] = useState(initialTab) // 'all' | 'mine'
   const [activeGrade, setActiveGrade] = useState(null)
-  const [activeCategory, setActiveCategory] = useState(null)
+  const [activeCategory, setActiveCategory] = useState(initialCategory)
   const [savedCategory, setSavedCategory] = useState(null)
   const [openReportId, setOpenReportId] = useState(null)
   const [userItems, setUserItems] = useState([])

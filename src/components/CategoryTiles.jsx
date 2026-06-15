@@ -11,7 +11,7 @@ function picksFor(category) {
   return listings.filter(l => l.category === category && l.image).slice(0, 4)
 }
 
-export default function CategoryTiles({ onProductClick, onMarketplace }) {
+export default function CategoryTiles({ onProductClick, onMarketplace, onCategory }) {
   const cards = CATEGORIES
     .map(c => ({ ...c, picks: picksFor(c.key) }))
     .filter(c => c.picks.length === 4)
@@ -44,7 +44,7 @@ export default function CategoryTiles({ onProductClick, onMarketplace }) {
 
             <button
               type="button"
-              onClick={onMarketplace}
+              onClick={() => onCategory ? onCategory(card.key) : onMarketplace?.()}
               className="text-sm font-semibold hover:underline mt-auto text-left"
               style={{ color: '#007185' }}
             >

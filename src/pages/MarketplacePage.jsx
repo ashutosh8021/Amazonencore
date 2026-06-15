@@ -5,7 +5,7 @@ import SubNav from '../components/SubNav.jsx'
 import Marketplace from '../components/Marketplace.jsx'
 import ProductDetail from './ProductDetail.jsx'
 
-export default function MarketplacePage({ onBack, nav = {}, searchQuery = '', initialTab = 'campus', initialProduct = null }) {
+export default function MarketplacePage({ onBack, nav = {}, searchQuery = '', initialTab = 'campus', initialProduct = null, initialCategory = null }) {
   const [selectedProduct, setSelectedProduct] = useState(initialProduct)
 
   return (
@@ -59,6 +59,7 @@ export default function MarketplacePage({ onBack, nav = {}, searchQuery = '', in
               onBuyNow={nav.onBuyNow}
               onProductClick={setSelectedProduct}
               initialTab={initialTab}
+              initialCategory={initialCategory}
             />
           </>
         )}

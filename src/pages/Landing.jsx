@@ -12,7 +12,7 @@ import ReturnPrevention from '../components/ReturnPrevention.jsx'
 import FinalCTA from '../components/FinalCTA.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onCampus, onProduct, onScrollTo, onMount, onSearch, onSignIn, onMyListings, onProfile, cartCount = 0, onOpenCart }) {
+export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onCampus, onProduct, onCategory, onScrollTo, onMount, onSearch, onSignIn, onMyListings, onProfile, cartCount = 0, onOpenCart }) {
   useEffect(() => {
     if (onMount) onMount()
   }, [onMount])
@@ -32,7 +32,7 @@ export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashbo
       />
       <Hero onGetStarted={onGetStarted} onDemoMode={onDemoMode} onMarketplace={onMarketplace} onDashboard={onDashboard} />
       <CampusDeals onProductClick={onProduct} onMarketplace={onCampus || onMarketplace} />
-      <CategoryTiles onProductClick={onProduct} onMarketplace={onMarketplace} />
+      <CategoryTiles onProductClick={onProduct} onMarketplace={onMarketplace} onCategory={onCategory} />
       <HowItWorks />
       <AIDecide />
       <Impact />
