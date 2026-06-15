@@ -158,7 +158,7 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
               )}
             </div>
 
-            <button type="button" className="text-left text-white leading-tight border border-transparent hover:border-white rounded px-1 py-0.5 transition-colors">
+            <button type="button" onClick={onMyListings} className="text-left text-white leading-tight border border-transparent hover:border-white rounded px-1 py-0.5 transition-colors">
               <span className="block text-[11px] text-[#CCCCCC]">Returns</span>
               <span className="block text-sm font-bold">&amp; Orders</span>
             </button>
