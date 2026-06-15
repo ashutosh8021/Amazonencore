@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { CheckCircle2, Loader2, ShieldCheck, Star, Truck, Eye, ExternalLink } from 'lucide-react'
+import { CheckCircle2, Loader2, LogIn, ShieldCheck, Star, Truck, Eye, ExternalLink } from 'lucide-react'
 import { publishListing } from '../lib/api.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 /* ── colour map ──────────────────────────────────────────────────── */
 
@@ -12,9 +13,10 @@ const GRADE_COLOR = {
   'Not Sellable': { color: '#cc0c39', bg: '#fce8e8' },
 }
 
-export default function ListingPreview({ listing, gradeResult, decideResult, imageUrl, originalPrice, category }) {
+export default function ListingPreview({ listing, gradeResult, decideResult, imageUrl, originalPrice, category, onSignIn }) {
   if (!listing) return null
 
+  const { user } = useAuth() ?? {}
   const [listed, setListed] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState(null)
@@ -33,6 +35,10 @@ export default function ListingPreview({ listing, gradeResult, decideResult, ima
   const confidence = gradeResult?.confidence ?? 90
 
   async function handleList() {
+    if (!user) {
+      if (onSignIn) onSignIn()
+      return
+    }
     setPublishing(true)
     setError(null)
     try {
@@ -202,23 +208,33 @@ export default function ListingPreview({ listing, gradeResult, decideResult, ima
         <div className="mt-5">
           {!listed ? (
             <div className="flex flex-col gap-2">
-              <button type="button"
-                onClick={handleList}
-                disabled={publishing}
-                className="w-full py-3.5 rounded-full font-bold text-sm transition-all hover:brightness-95 flex items-center justify-center gap-2 disabled:opacity-60"
-                style={{ backgroundColor: '#FFD814', color: '#0F1111' }}>
-                {publishing ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Publishing to marketplace...
-                  </>
-                ) : (
-                  <>
-                    <ExternalLink size={16} />
-                    List this item on Encore marketplace
-                  </>
-                )}
-              </button>
+              {!user ? (
+                <button type="button"
+                  onClick={() => onSignIn?.()}
+                  className="w-full py-3.5 rounded-full font-bold text-sm transition-all hover:brightness-95 flex items-center justify-center gap-2"
+                  style={{ backgroundColor: '#131921', color: 'white' }}>
+                  <LogIn size={16} />
+                  Sign in to list this item
+                </button>
+              ) : (
+                <button type="button"
+                  onClick={handleList}
+                  disabled={publishing}
+                  className="w-full py-3.5 rounded-full font-bold text-sm transition-all hover:brightness-95 flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{ backgroundColor: '#FFD814', color: '#0F1111' }}>
+                  {publishing ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Publishing to marketplace...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink size={16} />
+                      List this item on Encore marketplace
+                    </>
+                  )}
+                </button>
+              )}
               {error && (
                 <p className="text-xs text-center" style={{ color: '#cc0c39' }}>{error}</p>
               )}

@@ -1025,6 +1025,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                         imageUrl={preview}
                         originalPrice={price ? Number(price) : 0}
                         category={gradeResult.category || category}
+                        onSignIn={nav.onSignIn}
                       />
                     )}
 

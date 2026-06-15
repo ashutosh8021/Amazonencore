@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { X, CheckCircle, MapPin, CreditCard, Clock } from 'lucide-react'
+import { X, CheckCircle, MapPin, CreditCard, Clock, LogIn } from 'lucide-react'
+import { useAuth } from '../context/AuthContext.jsx'
 
 function addDays(n) {
   const d = new Date()
@@ -12,8 +13,9 @@ const DELIVERY_OPTS = [
   { id: 'express',  label: 'Express',   badge: 'Tomorrow',  detail: `Arrives by ${addDays(1)}`, price: 49 },
 ]
 
-export default function CheckoutModal({ product, onClose, cartItems, cartDelivery, cartDeliveryCost, cartTotal }) {
+export default function CheckoutModal({ product, onClose, cartItems, cartDelivery, cartDeliveryCost, cartTotal, onSignIn }) {
   const isCart = !!cartItems
+  const { user } = useAuth() ?? {}
 
   const [delivery, setDelivery] = useState(isCart ? cartDelivery : 'standard')
   const [ordered, setOrdered] = useState(false)
@@ -234,20 +236,36 @@ export default function CheckoutModal({ product, onClose, cartItems, cartDeliver
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={placeOrder}
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  backgroundColor: loading ? '#FFE878' : '#FFD814',
-                  color: '#0F1111', fontWeight: 700, fontSize: 15,
-                  padding: '12px', borderRadius: 24, border: 'none',
-                  cursor: loading ? 'wait' : 'pointer',
-                }}
-              >
-                {loading ? 'Placing order…' : `Place order · ₹${total.toLocaleString('en-IN')}`}
-              </button>
+              {!user ? (
+                <>
+                  <div style={{ backgroundColor: '#fff8e0', border: '1px solid #FF9900', borderRadius: 8, padding: '10px 14px', marginBottom: 10, fontSize: 13, color: '#c45500', textAlign: 'center' }}>
+                    Sign in to complete your purchase
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { onClose(); onSignIn?.() }}
+                    style={{ width: '100%', backgroundColor: '#131921', color: 'white', fontWeight: 700, fontSize: 15, padding: '12px', borderRadius: 24, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  >
+                    <LogIn size={16} />
+                    Sign in to buy
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={placeOrder}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    backgroundColor: loading ? '#FFE878' : '#FFD814',
+                    color: '#0F1111', fontWeight: 700, fontSize: 15,
+                    padding: '12px', borderRadius: 24, border: 'none',
+                    cursor: loading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {loading ? 'Placing order…' : `Place order · ₹${total.toLocaleString('en-IN')}`}
+                </button>
+              )}
               <p style={{ textAlign: 'center', fontSize: 10, color: '#879596', marginTop: 8, marginBottom: 0 }}>
                 By placing your order you agree to Encore's conditions of use.
               </p>

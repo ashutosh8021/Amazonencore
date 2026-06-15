@@ -156,6 +156,7 @@ function AppInner() {
         <CheckoutModal
           product={checkoutProduct}
           onClose={closeBuyNow}
+          onSignIn={openAuth}
         />
       )}
 
@@ -166,6 +167,7 @@ function AppInner() {
           cartDeliveryCost={cartCheckout.deliveryCost}
           cartTotal={cartCheckout.total}
           onClose={closeCartCheckout}
+          onSignIn={openAuth}
         />
       )}
 
