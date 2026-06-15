@@ -1,4 +1,5 @@
-import { ChevronRight, X, User, TrendingUp, ShoppingBag, BookOpen, Zap, Shirt, Home, Package, Recycle, Heart, Play, HelpCircle } from 'lucide-react'
+import { ChevronRight, X, User, TrendingUp, ShoppingBag, BookOpen, Zap, Shirt, Home, Package, Recycle, Heart, Play, HelpCircle, LogOut } from 'lucide-react'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const ENCORE_PROGRAMS = [
   { label: 'Sell with Encore',     Icon: ShoppingBag, action: 'sell' },
@@ -20,20 +21,36 @@ const CATEGORIES = [
 const HELP_LINKS = [
   { label: 'How Encore works',    action: 'how-it-works' },
   { label: 'About Encore',        action: 'trust' },
-  { label: 'Green credits',       action: null },
+  { label: 'Green credits',       action: 'impact' },
   { label: 'AI condition grading', action: 'ai-decide' },
 ]
 
-export default function SideDrawer({ open, onClose, onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo }) {
+export default function SideDrawer({ open, onClose, onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo, onSignIn }) {
+  const { user, signOut } = useAuth() ?? {}
+
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0]
+    ?? user?.email?.split('@')[0]
+    ?? null
+
   if (!open) return null
 
   function handle(action) {
     onClose()
-    if (action === 'sell')           { onGetStarted?.() }
-    else if (action === 'demo')      { onDemoMode?.() }
-    else if (action === 'personas')  { onPersonas?.() }
+    if (action === 'sell')             { onGetStarted?.() }
+    else if (action === 'demo')        { onDemoMode?.() }
+    else if (action === 'personas')    { onPersonas?.() }
     else if (action === 'marketplace') { onMarketplace?.() }
-    else if (action)                 { onScrollTo?.(action) }
+    else if (action)                   { onScrollTo?.(action) }
+  }
+
+  async function handleSignOut() {
+    onClose()
+    if (signOut) await signOut()
+  }
+
+  function handleSignIn() {
+    onClose()
+    onSignIn?.()
   }
 
   return (
@@ -56,19 +73,47 @@ export default function SideDrawer({ open, onClose, onGetStarted, onDemoMode, on
           className="flex items-center justify-between px-4 py-3 flex-shrink-0"
           style={{ backgroundColor: '#131921' }}
         >
-          <div className="flex items-center gap-2">
-            <User size={20} style={{ color: '#fff' }} />
-            <span className="text-base font-bold text-white">Hello, sign in</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <User size={20} style={{ color: '#fff', flexShrink: 0 }} />
+            {user ? (
+              <span className="text-base font-bold text-white truncate">Hello, {firstName}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSignIn}
+                className="text-base font-bold text-white hover:underline text-left"
+              >
+                Hello, sign in
+              </button>
+            )}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded hover:bg-white/10 transition-colors"
+            className="p-1 rounded hover:bg-white/10 transition-colors flex-shrink-0"
             aria-label="Close menu"
           >
             <X size={20} style={{ color: '#fff' }} />
           </button>
         </div>
+
+        {/* Sign-out row (logged in only) */}
+        {user && (
+          <div className="border-b" style={{ borderColor: '#D5D9D9' }}>
+            <p className="px-4 pt-3 pb-1 text-xs" style={{ color: '#565959' }}>{user.email}</p>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F7F8F8] transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: '#F3F3F3' }}>
+                <LogOut size={15} style={{ color: '#565959' }} />
+              </div>
+              <span className="text-sm" style={{ color: '#0F1111' }}>Sign out</span>
+            </button>
+          </div>
+        )}
 
         {/* Encore Programs */}
         <div className="border-b" style={{ borderColor: '#D5D9D9' }}>

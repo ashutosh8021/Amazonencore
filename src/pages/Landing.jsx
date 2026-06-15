@@ -25,6 +25,7 @@ export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashbo
         onDashboard={onDashboard}
         onMarketplace={onMarketplace}
         onScrollTo={onScrollTo}
+        onSignIn={onSignIn}
       />
       <Hero onGetStarted={onGetStarted} onDemoMode={onDemoMode} onMarketplace={onMarketplace} onDashboard={onDashboard} />
       <HowItWorks />

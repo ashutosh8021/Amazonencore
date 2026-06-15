@@ -9,7 +9,7 @@ const SECTION_LINKS = [
   { label: 'About Encore', href: 'trust' },
 ]
 
-export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo }) {
+export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo, onSignIn }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   function handleAnchor(e, sectionId) {
@@ -31,6 +31,7 @@ export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketp
         onDemoMode={onDemoMode}
         onPersonas={onPersonas}
         onMarketplace={onMarketplace}
+        onSignIn={onSignIn}
         onScrollTo={onScrollTo || ((id) => {
           const el = document.getElementById(id)
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })

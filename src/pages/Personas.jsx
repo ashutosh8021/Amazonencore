@@ -746,6 +746,7 @@ export default function Personas({ onBack, nav = {}, onScrollTo }) {
         onDashboard={nav.onDashboard}
         onMarketplace={nav.onMarketplace}
         onScrollTo={nav.onScrollTo || onScrollTo}
+        onSignIn={nav.onSignIn}
       />
 
       <div className="max-w-[1500px] mx-auto px-4 py-6">

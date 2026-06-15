@@ -62,6 +62,7 @@ export default function MyListings({ onBack, nav = {}, onSell }) {
         onPersonas={nav.onPersonas}
         onMarketplace={nav.onMarketplace}
         onScrollTo={nav.onScrollTo}
+        onSignIn={nav.onSignIn}
       />
 
       <div className="max-w-[1000px] mx-auto px-4 py-6">
