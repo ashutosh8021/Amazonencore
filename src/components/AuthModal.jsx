@@ -6,6 +6,7 @@ function friendlyError(msg = '') {
   if (msg.includes('Invalid login credentials')) return "No account found with this email or password is incorrect. Please check your details or create an account."
   if (msg.includes('User already registered') || msg.includes('already been registered')) return "An account with this email already exists. Sign in instead."
   if (msg.includes('Email not confirmed')) return "Please verify your email first — check your inbox for a verification link."
+  if (msg.includes('Error sending confirmation email') || msg.includes('sending confirmation')) return "Couldn't send the confirmation email right now — our email service may be rate-limited. Try again in a few minutes, or use Google sign-in."
   if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return "Too many attempts. Please wait a minute and try again."
   if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch')) return "Connection error — check your internet and try again."
   if (msg.includes('Password should be')) return "Password must be at least 6 characters."
@@ -153,8 +154,11 @@ export default function AuthModal({ onClose }) {
             <h2 className="text-lg font-bold text-[#0F1111] mb-2">Check your inbox</h2>
             <p className="text-sm text-[#565959] mb-1">We sent a verification link to</p>
             <p className="text-sm font-semibold text-[#0F1111] mb-4">{signupEmail}</p>
-            <p className="text-sm text-[#565959] mb-6">
+            <p className="text-sm text-[#565959] mb-2">
               Click the link in the email to activate your account, then come back and sign in.
+            </p>
+            <p className="text-xs text-[#879596] mb-6">
+              Don't see it? Check your spam or junk folder.
             </p>
             <button
               type="button"
