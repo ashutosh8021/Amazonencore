@@ -26,14 +26,19 @@ const MODULES = [
   {
     title: 'Encore impact',
     body: '12,847 items rescued. ₹1.82 Cr recovered. 48.2 tons CO2 diverted from landfill.',
-    cta: 'View dashboard',
+    cta: 'See our impact',
     ctaStyle: { backgroundColor: '#e6f4ea', color: '#067D62' },
-    action: 'dashboard',
+    action: 'impact',
   },
 ]
 
-export default function Hero({ onGetStarted, onDemoMode, onMarketplace, onDashboard }) {
-  const actionMap = { sell: onGetStarted, marketplace: onMarketplace, demo: onDemoMode, dashboard: onDashboard }
+export default function Hero({ onGetStarted, onDemoMode, onMarketplace }) {
+  const actionMap = {
+    sell: onGetStarted,
+    marketplace: onMarketplace,
+    demo: onDemoMode,
+    impact: () => document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+  }
 
   return (
     <>

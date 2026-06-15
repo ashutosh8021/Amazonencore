@@ -9,7 +9,7 @@ const SECTION_LINKS = [
   { label: 'About Encore', href: 'trust' },
 ]
 
-export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo }) {
+export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   function handleAnchor(e, sectionId) {
@@ -30,7 +30,6 @@ export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onDashboa
         onGetStarted={onGetStarted}
         onDemoMode={onDemoMode}
         onPersonas={onPersonas}
-        onDashboard={onDashboard}
         onMarketplace={onMarketplace}
         onScrollTo={onScrollTo || ((id) => {
           const el = document.getElementById(id)
@@ -82,17 +81,6 @@ export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onDashboa
               style={{ color: '#FF9900' }}
             >
               Encore stories
-            </button>
-          )}
-
-          {onDashboard && (
-            <button
-              type="button"
-              onClick={onDashboard}
-              className="text-sm font-semibold hover:text-[#FFD814] transition-colors flex-shrink-0"
-              style={{ color: '#FF9900' }}
-            >
-              Dashboard
             </button>
           )}
 

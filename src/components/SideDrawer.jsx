@@ -1,11 +1,10 @@
-import { ChevronRight, X, User, TrendingUp, ShoppingBag, BookOpen, Zap, Shirt, Home, Package, Recycle, Heart, BarChart3, Play, ShieldCheck, Info, HelpCircle } from 'lucide-react'
+import { ChevronRight, X, User, TrendingUp, ShoppingBag, BookOpen, Zap, Shirt, Home, Package, Recycle, Heart, Play, HelpCircle } from 'lucide-react'
 
 const ENCORE_PROGRAMS = [
-  { label: 'Sell with Encore',    Icon: ShoppingBag, action: 'sell' },
-  { label: 'Encore marketplace',  Icon: ShoppingBag, action: 'marketplace' },
+  { label: 'Sell with Encore',     Icon: ShoppingBag, action: 'sell' },
+  { label: 'Encore marketplace',   Icon: ShoppingBag, action: 'marketplace' },
   { label: 'See AI decide (demo)', Icon: Play,        action: 'demo' },
-  { label: 'Encore stories',      Icon: Heart,       action: 'personas' },
-  { label: 'Impact dashboard',    Icon: BarChart3,   action: 'dashboard' },
+  { label: 'Encore stories',       Icon: Heart,       action: 'personas' },
 ]
 
 const CATEGORIES = [
@@ -25,17 +24,16 @@ const HELP_LINKS = [
   { label: 'AI condition grading', action: 'ai-decide' },
 ]
 
-export default function SideDrawer({ open, onClose, onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo }) {
+export default function SideDrawer({ open, onClose, onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo }) {
   if (!open) return null
 
   function handle(action) {
     onClose()
-    if (action === 'sell')        { onGetStarted?.() }
-    else if (action === 'demo')   { onDemoMode?.() }
-    else if (action === 'personas') { onPersonas?.() }
-    else if (action === 'dashboard') { onDashboard?.() }
+    if (action === 'sell')           { onGetStarted?.() }
+    else if (action === 'demo')      { onDemoMode?.() }
+    else if (action === 'personas')  { onPersonas?.() }
     else if (action === 'marketplace') { onMarketplace?.() }
-    else if (action)              { onScrollTo?.(action) }
+    else if (action)                 { onScrollTo?.(action) }
   }
 
   return (
