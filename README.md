@@ -117,17 +117,17 @@ A deliberate separation that keeps the system trustworthy and auditable:
 
 Here is the problem we actually live with.
 
-You are in a college hostel. You ordered a ₹400 t-shirt. It does not fit. You raise a return. Amazon sends a pickup rider, ships the item 200 km back to a fulfilment centre, grades it, repackages it, and relists it. A week later, your neighbour two floors up — who was already thinking about buying that exact shirt — orders it. Amazon ships it 200 km back to your campus.
+You are in a college hostel. You ordered a ₹400 t-shirt. It does not fit. You raise a return. Amazon sends a pickup rider, ships the item 200 km back to a fulfilment centre, grades it, repackages it, and relists it. A week later, your neighbour two floors up who was already thinking about buying that exact shirt orders it. Amazon ships it 200 km back to your campus.
 
 The same item made a 400 km round trip to change hands across a corridor.
 
-In a market like India, where a discount is one of the strongest purchase triggers there is, the probability of a campus match within 48 hours is not an edge case — it is the default. Encore Campus is built around that reality.
+In a market like India, where a discount is one of the strongest purchase triggers there is, the probability of a campus hostel match within 48 hours is not an edge case it is the default. Encore Campus is built around that reality.
 
-**How it works:** when you raise a return, we automatically list the item at a discount in your campus feed for 48 hours. No action needed from you — the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get paid. If nobody buys it in 48 hours, a rider picks it up as normal.
+**How it works:** when you raise a return, we automatically list the item at a discount in your campus feed for 48 hours. No action needed from Customer the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get Refund and other person get discounted product. If nobody buys it in 48 hours, a rider picks it up as normal.
 
 The result: Amazon saves the double logistics cost. The original owner gets paid faster. The buyer pays less than retail. The item never leaves campus.
 
-We are starting with college campuses because the density is right — same pin code, same hostel block, maximum chance of a match. From there the model expands to apartment complexes, local neighbourhoods, and eventually city-level peer resale.
+We are starting with college campuses because the density is right same pin code, same hostel block same height and age people are more there  maximum chance of a match. From there the model expands to apartment complexes, local neighbourhoods, and eventually city-level peer resale.
 
 <div align="center">
 
@@ -143,7 +143,7 @@ We are starting with college campuses because the density is right — same pin 
 | --- | --- |
 | Frontend | React 19, Vite 8, Tailwind CSS v3, lucide-react |
 | Backend | Node.js, Express 5 |
-| AI | Amazon Bedrock (Claude vision + text); pluggable provider switch |
+| AI | Kimi (vision + text); pluggable provider switch (Groq / Bedrock / Kimi) |
 | Persistence | Supabase (Postgres + Storage + Auth) — optional, with in-memory fallback |
 | Security | Input validation, prompt-injection sanitization, CORS allowlist, hardened headers, write-token auth, rate limiting |
 

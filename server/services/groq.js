@@ -5,7 +5,7 @@
  * inputs. The gradeImage function may produce inaccurate or hallucinated results
  * when processing images through this provider. For production image grading,
  * use AI_PROVIDER=bedrock-sdk which supports native multimodal vision via
- * Amazon Bedrock (Claude).
+ * Amazon Bedrock (Kimi).
  */
 import { parseJSON } from '../lib/parseJSON.js'
 import { sanitizePromptText } from '../lib/sanitize.js'
