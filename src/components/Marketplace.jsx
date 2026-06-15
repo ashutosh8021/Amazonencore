@@ -136,7 +136,7 @@ function ConditionReport({ item, onClose }) {
   )
 }
 
-export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, initialTab = 'all' }) {
+export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, onProductClick, initialTab = 'all' }) {
   const { user } = useAuth() ?? {}
   const [activeTab, setActiveTab] = useState(initialTab) // 'all' | 'mine'
   const [activeGrade, setActiveGrade] = useState(null)
@@ -565,13 +565,14 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, i
                             <span className="text-xs text-[#565959]">{product.category}</span>
                           </div>
 
-                          <a
-                            href="#marketplace"
-                            className="block text-lg leading-snug font-medium hover:underline"
+                          <button
+                            type="button"
+                            onClick={() => onProductClick?.(product)}
+                            className="block text-left text-lg leading-snug font-medium hover:underline"
                             style={{ color: '#007185' }}
                           >
                             {product.title}
-                          </a>
+                          </button>
 
                           <div className="flex items-center gap-2 flex-wrap mt-1 text-sm">
                             <span className="text-[#C7511F]">★★★★☆</span>
