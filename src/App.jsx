@@ -6,6 +6,7 @@ import Intake from './pages/Intake.jsx'
 import Personas from './pages/Personas.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import MarketplacePage from './pages/MarketplacePage.jsx'
+import MyListings from './pages/MyListings.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 import CheckoutModal from './components/CheckoutModal.jsx'
 
@@ -31,7 +32,7 @@ function AppInner() {
   const goPersonas  = useCallback(() => setPage('personas'), [])
   const goDashboard = useCallback(() => setPage('dashboard'), [])
   const goMarket      = useCallback(() => { setSearchQuery(''); setMarketplaceTab('all'); setPage('marketplace') }, [])
-  const goMyListings  = useCallback(() => { setSearchQuery(''); setMarketplaceTab('mine'); setPage('marketplace') }, [])
+  const goMyListings  = useCallback(() => setPage('mylistings'), [])
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
   const openAuth    = useCallback(() => setAuthModalOpen(true), [])
   const closeAuth   = useCallback(() => setAuthModalOpen(false), [])
@@ -118,6 +119,9 @@ function AppInner() {
 
   return (
     <>
+      {page === 'mylistings' && (
+        <MyListings onBack={goHome} nav={nav} onSell={goIntake} />
+      )}
       {page === 'intake' && (
         <Intake onBack={goHome} demoMode={demoMode} nav={nav} />
       )}
