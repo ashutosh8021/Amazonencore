@@ -2,7 +2,7 @@
 
 # Amazon Encore
 
-### Every product deserves another chance.
+### Every product deserves another chance — just like people do.
 
 Built for **HackOn with Amazon Season 6.0** · *Second Life Commerce — AI-Powered Returns & Sustainable Resale*
 
