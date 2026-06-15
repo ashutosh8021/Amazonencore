@@ -25,7 +25,7 @@ const reasons = [
 
 export default function Trust() {
   return (
-    <section className="px-4 pb-10">
+    <section id="trust" className="px-4 pb-10">
       <div className="max-w-[1500px] mx-auto">
         <div className="rounded-md border bg-white overflow-hidden" style={{ borderColor: '#D5D9D9' }}>
           <div className="p-6 md:p-8">
