@@ -753,11 +753,6 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                 Demo mode — pre-loaded scenario
               </div>
             )}
-            {!demoMode && (
-              <div className="rounded-md border bg-[#FBFBFB] px-4 py-3 text-sm text-[#565959]" style={{ borderColor: '#D5D9D9' }}>
-                Browser handles the upload. Our API handles the decision logic.
-              </div>
-            )}
           </div>
 
           <Stepper currentStep={currentStep} />

@@ -2,6 +2,56 @@ import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const categories = require('../data/categories.json')
 
+// Maps AI-returned category strings (which vary) to our canonical keys in categories.json
+const CATEGORY_ALIASES = {
+  // Books
+  'book': 'Books', 'books': 'Books', 'textbook': 'Books', 'textbooks': 'Books',
+  'novel': 'Books', 'novels': 'Books', 'academic book': 'Books', 'academic books': 'Books',
+  'literature': 'Books', 'fiction': 'Books', 'non-fiction': 'Books', 'nonfiction': 'Books',
+  'comic': 'Books', 'comics': 'Books', 'magazine': 'Books',
+  // Apparel / Clothing
+  'apparel': 'Apparel', 'clothing': 'Apparel', 'clothes': 'Apparel',
+  'shirt': 'Apparel', 't-shirt': 'Apparel', 'tshirt': 'Apparel',
+  'jacket': 'Apparel', 'hoodie': 'Apparel', 'jeans': 'Apparel', 'pants': 'Apparel',
+  'dress': 'Apparel', 'skirt': 'Apparel', 'sweater': 'Apparel', 'coat': 'Apparel',
+  'fashion': 'Apparel', 'garment': 'Apparel', 'top': 'Apparel',
+  // Electronics
+  'electronics': 'Electronics', 'electronic': 'Electronics',
+  'phone': 'Electronics', 'smartphone': 'Electronics', 'mobile': 'Electronics',
+  'laptop': 'Electronics', 'computer': 'Electronics', 'tablet': 'Electronics',
+  'headphones': 'Electronics', 'earbuds': 'Electronics', 'earphones': 'Electronics',
+  'speaker': 'Electronics', 'camera': 'Electronics', 'watch': 'Electronics',
+  'smartwatch': 'Electronics', 'charger': 'Electronics', 'cable': 'Electronics',
+  'audio': 'Electronics', 'gaming': 'Electronics', 'console': 'Electronics',
+  // Footwear
+  'footwear': 'Footwear', 'shoes': 'Footwear', 'shoe': 'Footwear',
+  'sneakers': 'Footwear', 'sneaker': 'Footwear', 'boots': 'Footwear', 'boot': 'Footwear',
+  'sandals': 'Footwear', 'sandal': 'Footwear', 'heels': 'Footwear', 'slippers': 'Footwear',
+  // Home & Kitchen
+  'home & kitchen': 'Home & Kitchen', 'home and kitchen': 'Home & Kitchen',
+  'home': 'Home & Kitchen', 'kitchen': 'Home & Kitchen', 'appliance': 'Home & Kitchen',
+  'furniture': 'Home & Kitchen', 'lamp': 'Home & Kitchen', 'decor': 'Home & Kitchen',
+  'cookware': 'Home & Kitchen', 'utensils': 'Home & Kitchen',
+  // Toys
+  'toys': 'Toys', 'toy': 'Toys', 'game': 'Toys', 'games': 'Toys',
+  'board game': 'Toys', 'puzzle': 'Toys',
+  // Sports
+  'sports': 'Sports', 'sport': 'Sports', 'fitness': 'Sports', 'exercise': 'Sports',
+  'gym': 'Sports', 'outdoor': 'Sports', 'cycling': 'Sports', 'yoga': 'Sports',
+  // Beauty
+  'beauty': 'Beauty', 'skincare': 'Beauty', 'makeup': 'Beauty', 'cosmetics': 'Beauty',
+  'personal care': 'Beauty', 'grooming': 'Beauty', 'fragrance': 'Beauty',
+  // Automotive
+  'automotive': 'Automotive', 'auto': 'Automotive', 'car': 'Automotive',
+  'vehicle': 'Automotive', 'car accessories': 'Automotive',
+}
+
+function normalizeCategory(raw) {
+  if (!raw) return 'default'
+  const key = raw.trim().toLowerCase()
+  return CATEGORY_ALIASES[key] ?? (categories[raw] ? raw : 'default')
+}
+
 const resalePctByGrade = {
   'Like New': 0.70,
   'Very Good': 0.55,
@@ -18,7 +68,7 @@ function fmt(n) {
 }
 
 export function decide({ originalPrice, grade, category, confidence }) {
-  const cats = categories[category] ?? categories['default']
+  const cats = categories[normalizeCategory(category)] ?? categories['default']
   const { processingCost, refurbishCost, carbonSavedKg, returnShippingCo2Kg = 0.5 } = cats
 
   const resalePct = resalePctByGrade[grade] ?? 0

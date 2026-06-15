@@ -144,6 +144,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
   const [savedCategory, setSavedCategory] = useState(null)
   const [openReportId, setOpenReportId] = useState(null)
   const [userItems, setUserItems] = useState([])
+  const [fetchError, setFetchError] = useState(null)
   const [addedId, setAddedId] = useState(null)
 
   // Reset to "all" tab when user logs out
@@ -170,6 +171,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
     async function load() {
       try {
         const { listings: items } = await fetchUserListings()
+        setFetchError(null)
         if (items?.length) {
           const mapped = items.map(item => ({
             id: item.id,
@@ -192,15 +194,14 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
             },
             user_id: item.user_id ?? null,
             userListed: true,
-            // Demo is a single fixed campus, so every freshly-resold item is local.
-            // This is what makes a just-listed item appear in Campus automatically —
-            // no matching step, purely a location match.
             location: DEMO_LOCATION,
             localHandoff: true,
           }))
           setUserItems(mapped)
         }
-      } catch { /* silent fail */ }
+      } catch (err) {
+        setFetchError(err.message || 'Could not reach the Encore backend')
+      }
     }
     load()
     const interval = setInterval(load, 5000)
@@ -364,6 +365,14 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                   </button>
                 ))}
               </div>
+
+              {/* Backend connection error */}
+              {fetchError && (
+                <div className="rounded-md border mb-5 px-4 py-3 text-sm flex items-start gap-2" style={{ borderColor: '#c45500', backgroundColor: '#fff3e0', color: '#c45500' }}>
+                  <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+                  <span><span className="font-semibold">Could not load live listings:</span> {fetchError}. Showing curated catalogue only — newly listed items will appear once the connection is restored.</span>
+                </div>
+              )}
 
               {/* Campus banner — shown only on the Campus / Near you tab */}
               {activeTab === 'campus' && (
