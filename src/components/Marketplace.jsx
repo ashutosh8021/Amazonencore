@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, ShieldCheck, X, BookOpen, CheckCircle2, AlertTriangle, ShoppingCart, Zap, Package } from 'lucide-react'
-import { listings } from '../data/listings.js'
+import { ChevronDown, ChevronUp, ShieldCheck, X, BookOpen, CheckCircle2, AlertTriangle, ShoppingCart, Zap, Package, MapPin } from 'lucide-react'
+import { listings, DEMO_LOCATION } from '../data/listings.js'
 import { fetchUserListings } from '../lib/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -192,6 +192,11 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
             },
             user_id: item.user_id ?? null,
             userListed: true,
+            // Demo is a single fixed campus, so every freshly-resold item is local.
+            // This is what makes a just-listed item appear in Campus automatically —
+            // no matching step, purely a location match.
+            location: DEMO_LOCATION,
+            localHandoff: true,
           }))
           setUserItems(mapped)
         }
@@ -202,14 +207,29 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
     return () => clearInterval(interval)
   }, [])
 
-  const allListings = [...userItems, ...listings]
+  // For the demo there is one campus (IIT Patna) and every Encore item is available
+  // there — Amazon returns, personal daily items, freshly-resold listings, anything.
+  // So all inventory is treated as locally available for hand-to-hand campus pickup.
+  const seedListings = listings.map(l => ({
+    ...l,
+    location: l.location ?? DEMO_LOCATION,
+    localHandoff: l.localHandoff ?? true,
+  }))
+  const allListings = [...userItems, ...seedListings]
 
   // "My listings" tab: items the current user submitted (have user_id matching)
   const myListings = user
     ? allListings.filter(l => l.user_id === user.id || l.userListed)
     : []
 
-  const tabListings = activeTab === 'mine' ? myListings : allListings
+  // "Campus" tab: listings at the user's location — passive location filter, no matching.
+  const campusListings = allListings.filter(l => l.localHandoff || l.location === DEMO_LOCATION)
+
+  const tabListings = activeTab === 'mine'
+    ? myListings
+    : activeTab === 'campus'
+      ? campusListings
+      : allListings
   const allCategories = [...new Set(tabListings.map(l => l.category).filter(Boolean))].sort()
 
   const q = searchQuery.trim().toLowerCase()
@@ -313,33 +333,60 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
 
             {/* Listings */}
             <div className="p-5 md:p-6">
-              {/* All / My listings tab strip — visible only when logged in */}
-              {user && (
-                <div className="flex gap-2 mb-5">
-                  {[['all', 'All listings'], ['mine', 'My listings']].map(([key, label]) => (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => { setActiveTab(key); setActiveGrade(null); setActiveCategory(null) }}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-colors"
-                      style={{
-                        backgroundColor: activeTab === key ? '#131921' : 'white',
-                        color: activeTab === key ? 'white' : '#565959',
-                        borderColor: activeTab === key ? '#131921' : '#D5D9D9',
-                      }}
-                    >
-                      {key === 'mine' && <Package size={13} />}
-                      {label}
-                      {key === 'mine' && myListings.length > 0 && (
-                        <span
-                          className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                          style={{ backgroundColor: '#FF9900', color: '#0F1111' }}
-                        >
-                          {myListings.length}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+              {/* Campus / All / My listings tab strip */}
+              <div className="flex gap-2 mb-5 flex-wrap">
+                {[
+                  ['campus', `Campus — ${DEMO_LOCATION}`, MapPin, null],
+                  ['all', 'All listings', null, null],
+                  ...(user ? [['mine', 'My listings', Package, myListings.length]] : []),
+                ].map(([key, label, Icon, count]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setActiveTab(key); setActiveGrade(null); setActiveCategory(null) }}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-colors"
+                    style={{
+                      backgroundColor: activeTab === key ? '#131921' : 'white',
+                      color: activeTab === key ? 'white' : '#565959',
+                      borderColor: activeTab === key ? '#131921' : '#D5D9D9',
+                    }}
+                  >
+                    {Icon && <Icon size={13} />}
+                    {label}
+                    {count > 0 && (
+                      <span
+                        className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                        style={{ backgroundColor: '#FF9900', color: '#0F1111' }}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Campus banner — shown only on the Campus / Near you tab */}
+              {activeTab === 'campus' && (
+                <div
+                  className="rounded-md border p-5 mb-5"
+                  style={{ borderColor: '#067D62', backgroundColor: '#f0faf5' }}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin size={18} style={{ color: '#067D62' }} />
+                    <h3 className="text-lg font-bold" style={{ color: '#0F1111' }}>
+                      Encore Campus — {DEMO_LOCATION}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-[#565959] mb-2">
+                    Everything available near you — Amazon returns, open-box deals, and items listed by
+                    people on your campus. Picked up hand-to-hand, with zero return miles.
+                  </p>
+                  <p className="text-sm text-[#565959]">
+                    <span className="font-semibold" style={{ color: '#067D62' }}>The idea:</span> when an
+                    Amazon order is returned but costs too much to ship back to the warehouse and relist,
+                    Encore lists it here at a discount — so someone nearby gets it cheap and it never
+                    leaves the campus.
+                  </p>
                 </div>
               )}
 
@@ -402,7 +449,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                     {q ? ` for "${searchQuery}"` : activeGrade ? ` for "${activeGrade}"` : ' for Encore picks'}
                   </p>
                   <h3 className="text-2xl font-bold text-[#0F1111]">
-                    {q ? `Results for "${searchQuery}"` : activeGrade ? `${activeGrade} condition` : 'Popular second-life listings'}
+                    {q ? `Results for "${searchQuery}"` : activeGrade ? `${activeGrade} condition` : activeTab === 'campus' ? `Near you · ${DEMO_LOCATION}` : 'Popular second-life listings'}
                   </h3>
                 </div>
                 <p className="text-sm font-semibold" style={{ color: '#007185' }}>
@@ -415,6 +462,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                 const bookListings = listings.filter((l) => l.category === 'Books')
                 if (!bookListings.length) return null
                 if (q && !q.includes('book')) return null
+                if (activeTab !== 'all') return null
 
                 function extractAttr(observations, keywords) {
                   const obs = observations.find((o) =>
@@ -566,6 +614,13 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                                 Just listed
                               </span>
                             )}
+                            {product.localHandoff && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                                style={{ backgroundColor: '#e6f4ea', color: '#067D62' }}>
+                                <MapPin size={10} />
+                                Local handoff
+                              </span>
+                            )}
                             <span className="text-xs text-[#565959]">{product.category}</span>
                           </div>
 
@@ -603,12 +658,26 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                             ) : null}
                           </div>
 
-                          <p className="text-sm mt-3" style={{ color: '#067D62' }}>
-                            {product.delivery}
-                          </p>
-                          <p className="text-sm text-[#565959] mt-1">
-                            30-day return window. Backed by Encore condition support.
-                          </p>
+                          {product.localHandoff ? (
+                            <>
+                              <p className="text-sm mt-3 inline-flex items-center gap-1 font-medium" style={{ color: '#067D62' }}>
+                                <MapPin size={13} />
+                                Campus handoff · {product.location || DEMO_LOCATION}
+                              </p>
+                              <p className="text-sm mt-1 font-medium" style={{ color: '#067D62' }}>
+                                Hand-to-hand on campus · instant for the seller · zero return miles
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm mt-3" style={{ color: '#067D62' }}>
+                                {product.delivery}
+                              </p>
+                              <p className="text-sm text-[#565959] mt-1">
+                                30-day return window. Backed by Encore condition support.
+                              </p>
+                            </>
+                          )}
                         </div>
 
                         <div className="md:w-[210px] flex-shrink-0">

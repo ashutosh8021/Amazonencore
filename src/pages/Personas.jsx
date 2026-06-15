@@ -745,6 +745,7 @@ export default function Personas({ onBack, nav = {}, onScrollTo }) {
         onDemoMode={nav.onDemoMode}
         onDashboard={nav.onDashboard}
         onMarketplace={nav.onMarketplace}
+        onCampus={nav.onCampus}
         onScrollTo={nav.onScrollTo || onScrollTo}
         onSignIn={nav.onSignIn}
       />

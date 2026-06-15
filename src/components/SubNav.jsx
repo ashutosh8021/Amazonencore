@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Menu } from 'lucide-react'
+import { Menu, MapPin } from 'lucide-react'
 import SideDrawer from './SideDrawer.jsx'
 
 const SECTION_LINKS = [
@@ -9,7 +9,7 @@ const SECTION_LINKS = [
   { label: 'About Encore', href: 'trust' },
 ]
 
-export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketplace, onScrollTo, onSignIn }) {
+export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketplace, onCampus, onScrollTo, onSignIn }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   function handleAnchor(e, sectionId) {
@@ -59,6 +59,18 @@ export default function SubNav({ onGetStarted, onDemoMode, onPersonas, onMarketp
               className="text-white text-sm hover:text-[#FFD814] transition-colors flex-shrink-0 bg-transparent border-0 p-0 cursor-pointer"
             >
               Encore marketplace
+            </button>
+          )}
+
+          {/* Campus / Near you link */}
+          {onCampus && (
+            <button
+              type="button"
+              onClick={onCampus}
+              className="inline-flex items-center gap-1 text-white text-sm hover:text-[#FFD814] transition-colors flex-shrink-0 bg-transparent border-0 p-0 cursor-pointer"
+            >
+              <MapPin size={14} />
+              Campus
             </button>
           )}
 

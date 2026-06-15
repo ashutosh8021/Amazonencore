@@ -88,6 +88,7 @@ export default function Profile({ onBack, nav = {} }) {
         onDemoMode={nav.onDemoMode}
         onPersonas={nav.onPersonas}
         onMarketplace={nav.onMarketplace}
+        onCampus={nav.onCampus}
         onScrollTo={nav.onScrollTo}
         onSignIn={nav.onSignIn}
       />

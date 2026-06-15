@@ -62,6 +62,7 @@ export default function MyListings({ onBack, nav = {}, onSell }) {
         onDemoMode={nav.onDemoMode}
         onPersonas={nav.onPersonas}
         onMarketplace={nav.onMarketplace}
+        onCampus={nav.onCampus}
         onScrollTo={nav.onScrollTo}
         onSignIn={nav.onSignIn}
       />

@@ -190,6 +190,7 @@ export default function Dashboard({ onBack, nav = {}, onScrollTo }) {
         onPersonas={nav.onPersonas}
         onDashboard={nav.onDashboard}
         onMarketplace={nav.onMarketplace}
+        onCampus={nav.onCampus}
         onScrollTo={nav.onScrollTo || onScrollTo}
         onSignIn={nav.onSignIn}
       />

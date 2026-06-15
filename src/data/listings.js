@@ -1,6 +1,10 @@
 const images = import.meta.glob('../assets/listings/*', { eager: true })
 function img(f) { return images[`../assets/listings/${f}`]?.default ?? null }
 
+// Fixed demo location for Encore Campus (location-aware marketplace).
+// Location is a MARKETPLACE-LAYER concern only — the disposition engine never sees it.
+export const DEMO_LOCATION = 'IIT Patna'
+
 export const listings = [
   // ── Air Purifiers ────────────────────────────────────────────────────
   {
@@ -665,6 +669,115 @@ export const listings = [
       confidence: 94,
       observations: ['All 6 posters uncreased', 'Reading pen battery tested', 'Returned after gifting duplicate'],
       summary: 'Duplicate gift return. All posters uncreased and vibrant. Reading pen charges and reads accurately. Complete set.',
+    },
+  },
+
+  // ── Encore Campus — IIT Patna (local handoff) ─────────────────────────
+  // Tagged to the demo campus. These surface in the "Campus / Near you" tab
+  // and carry the local-handoff framing. Location is marketplace-only metadata.
+  {
+    id: 'campus-clrs-textbook',
+    title: 'Introduction to Algorithms (CLRS) — 3rd Edition, Paperback',
+    category: 'Books',
+    conditionScore: 76,
+    conditionGrade: 'Good',
+    price: 650,
+    originalPrice: 1499,
+    image: null,
+    tag: 'Campus handoff',
+    rating: '4.8',
+    reviews: 'Campus',
+    delivery: 'Campus handoff today · IIT Patna',
+    location: DEMO_LOCATION,
+    localHandoff: true,
+    conditionReport: {
+      confidence: 84,
+      observations: ['Spine intact, no loose pages', 'Highlighting in first four chapters', 'Cover corners lightly bumped'],
+      summary: 'Well-used coursework copy. Highlighting through the early chapters, otherwise clean and fully legible. Spine and binding solid.',
+    },
+  },
+  {
+    id: 'campus-casio-991',
+    title: 'Casio FX-991EX Scientific Calculator — Exam Approved',
+    category: 'Electronics',
+    conditionScore: 88,
+    conditionGrade: 'Very Good',
+    price: 700,
+    originalPrice: 1295,
+    image: null,
+    tag: 'Campus handoff',
+    rating: '4.7',
+    reviews: 'Campus',
+    delivery: 'Campus handoff today · IIT Patna',
+    location: DEMO_LOCATION,
+    localHandoff: true,
+    conditionReport: {
+      confidence: 90,
+      observations: ['All keys responsive', 'Slip cover included', 'Minor scuff on back panel'],
+      summary: 'Fully functional exam-approved calculator. Every key tested. Light scuff on the rear casing only — display and functions perfect.',
+    },
+  },
+  {
+    id: 'campus-boat-earbuds',
+    title: 'boAt Airdopes 141 Wireless Earbuds — Charging Case',
+    category: 'Electronics',
+    conditionScore: 72,
+    conditionGrade: 'Good',
+    price: 600,
+    originalPrice: 1299,
+    image: null,
+    tag: 'Campus handoff',
+    rating: '4.3',
+    reviews: 'Campus',
+    delivery: 'Campus handoff today · IIT Patna',
+    location: DEMO_LOCATION,
+    localHandoff: true,
+    conditionReport: {
+      confidence: 81,
+      observations: ['Both buds pair and hold charge', 'Case hinge firm', 'Fresh ear tips fitted before listing'],
+      summary: 'Working wireless earbuds with case. Both sides pair and charge normally. New ear tips fitted. Light surface wear on the case lid.',
+    },
+  },
+  {
+    id: 'campus-hoodie',
+    title: 'Campus Pullover Hoodie — Navy, Fleece-lined, Size L',
+    category: 'Apparel',
+    conditionScore: 90,
+    conditionGrade: 'Very Good',
+    price: 450,
+    originalPrice: 1199,
+    image: null,
+    tag: 'Campus handoff',
+    rating: '4.5',
+    reviews: 'Campus',
+    delivery: 'Campus handoff today · IIT Patna',
+    location: DEMO_LOCATION,
+    localHandoff: true,
+    conditionReport: {
+      confidence: 88,
+      observations: ['No pilling or fading', 'Drawstrings intact', 'Washed and fresh before listing'],
+      summary: 'Lightly worn navy hoodie. Fleece interior soft, no pilling or fading. Drawstrings and cuffs intact. Cleaned before listing.',
+    },
+  },
+  {
+    id: 'campus-desk-lamp',
+    title: 'LED Study Desk Lamp — Adjustable Arm, USB Charging Port',
+    category: 'Home & Kitchen',
+    conditionScore: 94,
+    conditionGrade: 'Like New',
+    price: 550,
+    originalPrice: 1099,
+    image: null,
+    tag: 'Campus handoff',
+    rating: '4.6',
+    reviews: 'Campus',
+    delivery: 'Campus handoff today · IIT Patna',
+    location: DEMO_LOCATION,
+    localHandoff: true,
+    conditionReport: {
+      confidence: 93,
+      observations: ['Three brightness modes tested', 'USB port charges phones', 'Adjustable arm holds position'],
+      summary: 'Near-new study lamp. All three brightness levels and the USB charging port tested and working. Arm holds any angle firmly.',
     },
   },
 ]

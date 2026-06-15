@@ -17,7 +17,8 @@ function AppInner() {
   const [demoMode, setDemoMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [authModalOpen, setAuthModalOpen] = useState(false)
-  const [marketplaceTab, setMarketplaceTab] = useState('all')
+  const [marketplaceTab, setMarketplaceTab] = useState('campus')
+  const [marketProduct, setMarketProduct] = useState(null)
 
   // Cart state
   const [cartItems, setCartItems] = useState([])
@@ -33,7 +34,9 @@ function AppInner() {
   const goDemo      = useCallback(() => { setDemoMode(true);  setPage('intake') }, [])
   const goPersonas  = useCallback(() => setPage('personas'), [])
   const goDashboard = useCallback(() => setPage('dashboard'), [])
-  const goMarket      = useCallback(() => { setSearchQuery(''); setMarketplaceTab('all'); setPage('marketplace') }, [])
+  const goMarket      = useCallback(() => { setSearchQuery(''); setMarketProduct(null); setMarketplaceTab('campus'); setPage('marketplace') }, [])
+  const goCampus      = useCallback(() => { setSearchQuery(''); setMarketProduct(null); setMarketplaceTab('campus'); setPage('marketplace') }, [])
+  const goProduct     = useCallback((product) => { setMarketProduct(product); setMarketplaceTab('campus'); setPage('marketplace') }, [])
   const goMyListings  = useCallback(() => setPage('mylistings'), [])
   const goProfile     = useCallback(() => setPage('profile'), [])
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
@@ -112,6 +115,8 @@ function AppInner() {
     onPersonas:       goPersonas,
     onDashboard:      goDashboard,
     onMarketplace:    goMarket,
+    onCampus:         goCampus,
+    onProduct:        goProduct,
     onScrollTo:       scrollTo,
     onSearch:         goSearch,
     onAddToCart:      addToCart,
@@ -144,7 +149,7 @@ function AppInner() {
         <Dashboard onBack={goHome} nav={nav} />
       )}
       {page === 'marketplace' && (
-        <MarketplacePage onBack={goHome} nav={nav} searchQuery={searchQuery} initialTab={marketplaceTab} />
+        <MarketplacePage onBack={goHome} nav={nav} searchQuery={searchQuery} initialTab={marketplaceTab} initialProduct={marketProduct} />
       )}
       {page === 'landing' && (
         <Landing
@@ -153,6 +158,8 @@ function AppInner() {
           onPersonas={goPersonas}
           onDashboard={goDashboard}
           onMarketplace={goMarket}
+          onCampus={goCampus}
+          onProduct={goProduct}
           onScrollTo={scrollTo}
           onMount={handleLandingMount}
           onSearch={goSearch}

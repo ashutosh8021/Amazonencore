@@ -716,6 +716,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
         onPersonas={nav.onPersonas}
         onDashboard={nav.onDashboard}
         onMarketplace={nav.onMarketplace}
+        onCampus={nav.onCampus}
         onScrollTo={nav.onScrollTo || onScrollTo}
         onSignIn={nav.onSignIn}
       />
