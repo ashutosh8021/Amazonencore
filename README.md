@@ -109,6 +109,8 @@ A deliberate separation that keeps the system trustworthy and auditable:
 | :---: | :---: |
 | ![Marketplace](screenshots/marketplace.png) | ![Dashboard](screenshots/dashboard.png) |
 
+*Amazon started as a bookstore. Second-hand books are where Encore Campus makes its most natural first move — same campus, same course, same book changing hands without a single km of logistics. Millions of students already want affordable textbooks. Encore gives them a trusted, AI-verified way to find them.*
+
 </div>
 
 ---
@@ -121,13 +123,13 @@ You are in a college hostel. You ordered a ₹400 t-shirt. It does not fit. You 
 
 The same item made a 400 km round trip to change hands across a corridor.
 
-In a market like India, where a discount is one of the strongest purchase triggers there is, the probability of a campus hostel match within 48 hours is not an edge case it is the default. Encore Campus is built around that reality.
+In a market like India, where a discount is one of the strongest purchase triggers there is, the probability of a campus match within 48 hours is not an edge case — it is the default. Encore Campus is built around that reality.
 
-**How it works:** when you raise a return, we automatically list the item at a discount in your campus feed for 48 hours. No action needed from Customer the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get Refund and other person get discounted product. If nobody buys it in 48 hours, a rider picks it up as normal.
+**How it works:** when you raise a return, we automatically list the item at a discount in your campus feed for 48 hours. No action needed from you — the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get paid; the buyer gets a discounted product. If nobody buys it in 48 hours, a rider picks it up as normal.
 
 The result: Amazon saves the double logistics cost. The original owner gets paid faster. The buyer pays less than retail. The item never leaves campus.
 
-We are starting with college campuses because the density is right same pin code, same hostel block same height and age people are more there  maximum chance of a match. From there the model expands to apartment complexes, local neighbourhoods, and eventually city-level peer resale.
+We are starting with college campuses because the density is right — same pin code, same hostel block, same age group, maximum chance of a match. From there the model expands to apartment complexes, local neighbourhoods, and eventually city-level peer resale.
 
 <div align="center">
 
