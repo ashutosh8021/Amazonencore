@@ -14,6 +14,7 @@ function AppInner() {
   const [demoMode, setDemoMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [marketplaceTab, setMarketplaceTab] = useState('all')
 
   // Cart state
   const [cartItems, setCartItems] = useState([])
@@ -29,7 +30,8 @@ function AppInner() {
   const goDemo      = useCallback(() => { setDemoMode(true);  setPage('intake') }, [])
   const goPersonas  = useCallback(() => setPage('personas'), [])
   const goDashboard = useCallback(() => setPage('dashboard'), [])
-  const goMarket    = useCallback(() => { setSearchQuery(''); setPage('marketplace') }, [])
+  const goMarket      = useCallback(() => { setSearchQuery(''); setMarketplaceTab('all'); setPage('marketplace') }, [])
+  const goMyListings  = useCallback(() => { setSearchQuery(''); setMarketplaceTab('mine'); setPage('marketplace') }, [])
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
   const openAuth    = useCallback(() => setAuthModalOpen(true), [])
   const closeAuth   = useCallback(() => setAuthModalOpen(false), [])
@@ -107,6 +109,7 @@ function AppInner() {
     onBuyNow:         openBuyNow,
     onOpenCart:       openCart,
     onSignIn:         openAuth,
+    onMyListings:     goMyListings,
     cartItems,
     cartCount,
     onRemoveFromCart: removeFromCart,
@@ -125,7 +128,7 @@ function AppInner() {
         <Dashboard onBack={goHome} nav={nav} />
       )}
       {page === 'marketplace' && (
-        <MarketplacePage onBack={goHome} nav={nav} searchQuery={searchQuery} />
+        <MarketplacePage onBack={goHome} nav={nav} searchQuery={searchQuery} initialTab={marketplaceTab} />
       )}
       {page === 'landing' && (
         <Landing
@@ -138,6 +141,7 @@ function AppInner() {
           onMount={handleLandingMount}
           onSearch={goSearch}
           onSignIn={openAuth}
+          onMyListings={goMyListings}
           cartCount={cartCount}
           onOpenCart={openCart}
         />

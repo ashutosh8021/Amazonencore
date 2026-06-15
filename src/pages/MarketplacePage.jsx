@@ -3,10 +3,10 @@ import TopNav from '../components/TopNav.jsx'
 import SubNav from '../components/SubNav.jsx'
 import Marketplace from '../components/Marketplace.jsx'
 
-export default function MarketplacePage({ onBack, nav = {}, searchQuery = '' }) {
+export default function MarketplacePage({ onBack, nav = {}, searchQuery = '', initialTab = 'all' }) {
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} onSignIn={nav.onSignIn} />
+      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}
@@ -38,7 +38,7 @@ export default function MarketplacePage({ onBack, nav = {}, searchQuery = '' }) 
           </p>
         </div>
 
-        <Marketplace searchQuery={searchQuery} onAddToCart={nav.onAddToCart} onBuyNow={nav.onBuyNow} />
+        <Marketplace searchQuery={searchQuery} onAddToCart={nav.onAddToCart} onBuyNow={nav.onBuyNow} initialTab={initialTab} />
       </div>
     </div>
   )

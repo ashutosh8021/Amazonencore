@@ -109,9 +109,9 @@ function ConditionReport({ item, onClose }) {
   )
 }
 
-export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow }) {
+export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, initialTab = 'all' }) {
   const { user } = useAuth() ?? {}
-  const [activeTab, setActiveTab] = useState('all') // 'all' | 'mine'
+  const [activeTab, setActiveTab] = useState(initialTab) // 'all' | 'mine'
   const [activeGrade, setActiveGrade] = useState(null)
   const [activeCategory, setActiveCategory] = useState(null)
   const [savedCategory, setSavedCategory] = useState(null)

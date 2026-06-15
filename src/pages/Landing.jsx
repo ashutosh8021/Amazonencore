@@ -10,14 +10,14 @@ import ReturnPrevention from '../components/ReturnPrevention.jsx'
 import FinalCTA from '../components/FinalCTA.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo, onMount, onSearch, onSignIn, cartCount = 0, onOpenCart }) {
+export default function Landing({ onGetStarted, onDemoMode, onPersonas, onDashboard, onMarketplace, onScrollTo, onMount, onSearch, onSignIn, onMyListings, cartCount = 0, onOpenCart }) {
   useEffect(() => {
     if (onMount) onMount()
   }, [onMount])
 
   return (
     <div style={{ color: '#0F1111', backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={onGetStarted} primaryLabel="Sell with Encore" onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onSearch={onSearch} cartCount={cartCount} onOpenCart={onOpenCart} onSignIn={onSignIn} />
+      <TopNav onPrimaryAction={onGetStarted} primaryLabel="Sell with Encore" onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onSearch={onSearch} cartCount={cartCount} onOpenCart={onOpenCart} onSignIn={onSignIn} onMyListings={onMyListings} />
       <SubNav
         onGetStarted={onGetStarted}
         onDemoMode={onDemoMode}
