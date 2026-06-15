@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { useAuth } from './context/AuthContext.jsx'
 import AuthModal from './components/AuthModal.jsx'
 import Landing from './pages/Landing.jsx'
 import Intake from './pages/Intake.jsx'
@@ -36,6 +37,11 @@ function AppInner() {
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
   const openAuth    = useCallback(() => setAuthModalOpen(true), [])
   const closeAuth   = useCallback(() => setAuthModalOpen(false), [])
+
+  const { passwordRecovery } = useAuth()
+  useEffect(() => {
+    if (passwordRecovery) setAuthModalOpen(true)
+  }, [passwordRecovery])
 
   const addToCart = useCallback((product) => {
     setCartItems(prev => {
