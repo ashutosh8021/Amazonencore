@@ -1,5 +1,12 @@
-import { CheckCircle, Heart, Leaf, TrendingUp } from 'lucide-react'
+import { CheckCircle, Leaf, Upload, ScanLine, GitBranch } from 'lucide-react'
 import EncoreMark from './EncoreMark.jsx'
+
+const FLOW_STEPS = [
+  { icon: Upload,    title: 'Snap',   body: 'A photo of the returned or unused item.' },
+  { icon: ScanLine,  title: 'Grade',  body: 'AI reads condition, flaws and confidence.' },
+  { icon: GitBranch, title: 'Route',  body: 'Value-vs-cost math picks the best outcome.' },
+  { icon: Leaf,      title: 'Reward', body: 'A listing if it sells — green credits if not.' },
+]
 
 export default function Hero({ onGetStarted, onDemoMode, onMarketplace }) {
 
@@ -88,62 +95,50 @@ export default function Hero({ onGetStarted, onDemoMode, onMarketplace }) {
               </button>
             </div>
 
-            {/* Right — contrasting routing cards (the key demo moment) */}
-            <div className="hidden md:flex flex-col gap-3 w-[300px] lg:w-[340px] flex-shrink-0">
+            {/* Right — Snap → Grade → Route → Reward flow */}
+            <div className="hidden md:block w-[320px] lg:w-[360px] flex-shrink-0">
+              <div style={{ backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '22px 22px 18px', border: '1px solid rgba(255,255,255,0.12)' }}>
+                <p style={{ color: '#FF9900', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 18 }}>
+                  How Encore works
+                </p>
 
-              {/* AirPods Pro → Resell */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 12, padding: 16, border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div className="flex items-start justify-between mb-3 gap-2">
-                  <div className="min-w-0">
-                    <p style={{ color: '#87CEEB', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 2 }}>
-                      High-value item
-                    </p>
-                    <p style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>AirPods Pro (2nd gen)</p>
-                    <p style={{ color: '#87CEEB', fontSize: 12 }}>₹24,900 · Grade: Very Good</p>
+                <div className="relative">
+                  {/* connecting line behind the icon badges */}
+                  <div style={{ position: 'absolute', left: 21, top: 22, bottom: 22, width: 2, backgroundColor: 'rgba(255,255,255,0.12)' }} />
+
+                  <div className="flex flex-col gap-5">
+                    {FLOW_STEPS.map((step, i) => {
+                      const Icon = step.icon
+                      return (
+                        <div key={step.title} className="flex items-start gap-4 relative">
+                          <div
+                            className="flex-shrink-0 flex items-center justify-center"
+                            style={{
+                              width: 44, height: 44, borderRadius: '50%',
+                              backgroundColor: '#0A4F6E',
+                              border: '2px solid rgba(255,153,0,0.45)',
+                              color: '#FF9900',
+                            }}
+                          >
+                            <Icon size={20} />
+                          </div>
+                          <div className="pt-1">
+                            <div className="flex items-center gap-2">
+                              <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{step.title}</span>
+                              <span style={{ color: '#5B7A8C', fontSize: 11, fontWeight: 600 }}>Step {i + 1}</span>
+                            </div>
+                            <p style={{ color: '#A8C7DA', fontSize: 12.5, lineHeight: 1.5, marginTop: 2 }}>{step.body}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                  <span style={{ backgroundColor: '#e6f4ea', color: '#067D62', borderRadius: 20, padding: '3px 9px', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
-                    Very Good
-                  </span>
                 </div>
-                <div style={{ backgroundColor: 'rgba(6,125,98,0.22)', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <TrendingUp size={18} style={{ color: '#4ADE80', flexShrink: 0 }} />
-                  <div>
-                    <p style={{ color: '#4ADE80', fontWeight: 800, fontSize: 17 }}>Resell at ₹12,500</p>
-                    <p style={{ color: '#A8C7DA', fontSize: 11 }}>₹12,100 net after processing</p>
-                  </div>
-                </div>
+
+                <p style={{ color: '#87CEEB', fontSize: 11.5, textAlign: 'center', marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.10)' }}>
+                  Photo to decision in seconds — all inside Amazon.
+                </p>
               </div>
-
-              {/* Running shoe → Donate */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 12, padding: 16, border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div className="flex items-start justify-between mb-3 gap-2">
-                  <div className="min-w-0">
-                    <p style={{ color: '#87CEEB', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 2 }}>
-                      The long-tail case
-                    </p>
-                    <p style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>Running shoe (used)</p>
-                    <p style={{ color: '#87CEEB', fontSize: 12 }}>₹500 · Grade: Good</p>
-                  </div>
-                  <span style={{ backgroundColor: '#fff3e0', color: '#c45500', borderRadius: 20, padding: '3px 9px', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
-                    Good
-                  </span>
-                </div>
-                <div style={{ fontSize: 12, color: '#A8C7DA', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>Resale ₹200 − cost ₹250 =</span>
-                  <span style={{ color: '#F87171', fontWeight: 700 }}>−₹50</span>
-                </div>
-                <div style={{ backgroundColor: 'rgba(255,153,0,0.18)', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Heart size={18} style={{ color: '#FF9900', flexShrink: 0 }} />
-                  <div>
-                    <p style={{ color: '#FFD814', fontWeight: 800, fontSize: 17 }}>Donate + 24 credits</p>
-                    <p style={{ color: '#A8C7DA', fontSize: 11 }}>Relisting would lose ₹50</p>
-                  </div>
-                </div>
-              </div>
-
-              <p style={{ color: '#87CEEB', fontSize: 11, textAlign: 'center', marginTop: 2 }}>
-                Encore sees both. Only one choice is actually right.
-              </p>
             </div>
 
           </div>
