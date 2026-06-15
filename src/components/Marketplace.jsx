@@ -453,8 +453,9 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                           return (
                             <div
                               key={book.id}
-                              className="min-w-[280px] max-w-[300px] rounded-md border bg-white p-4 flex flex-col gap-3 flex-shrink-0"
+                              className="min-w-[280px] max-w-[300px] rounded-md border bg-white p-4 flex flex-col gap-3 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
                               style={{ borderColor: '#D5D9D9' }}
+                              onClick={() => onProductClick?.(book)}
                             >
                               <div className="h-[140px] rounded-md overflow-hidden border" style={{ borderColor: '#D5D9D9' }}>
                                 <img
@@ -465,13 +466,14 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                                 />
                               </div>
 
-                              <a
-                                href="#marketplace"
-                                className="text-sm font-medium leading-snug hover:underline line-clamp-2"
+                              <button
+                                type="button"
+                                onClick={() => onProductClick?.(book)}
+                                className="text-left text-sm font-medium leading-snug hover:underline line-clamp-2"
                                 style={{ color: '#007185' }}
                               >
                                 {book.title}
-                              </a>
+                              </button>
 
                               <div className="flex items-center gap-2">
                                 <span
@@ -548,7 +550,9 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, o
                     <div key={product.id} className="py-5 first:pt-0 last:pb-0"
                       style={product.userListed ? { borderLeft: '3px solid #FF9900', paddingLeft: 16, backgroundColor: '#fffdf5' } : {}}>
                       <div className="flex flex-col md:flex-row gap-5">
-                        <ProductImage product={product} />
+                        <div className="cursor-pointer" onClick={() => onProductClick?.(product)}>
+                          <ProductImage product={product} />
+                        </div>
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
