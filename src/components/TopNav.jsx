@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, LogOut, MapPin, Menu, Package, Search, ShoppingCart, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
-export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Encore', onHome, onSearch, cartCount = 0, onOpenCart, onSignIn, onMyListings }) {
+export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Encore', onHome, onSearch, cartCount = 0, onOpenCart, onSignIn, onMyListings, onProfile }) {
   const { user, signOut } = useAuth() ?? {}
   const [query, setQuery] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -137,6 +137,14 @@ export default function TopNav({ onPrimaryAction, primaryLabel = 'Sell with Enco
                     <p className="text-xs text-[#565959]">Signed in as</p>
                     <p className="text-sm font-semibold text-[#0F1111] truncate">{user.email}</p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => { setDropdownOpen(false); onProfile?.() }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#0F1111] hover:bg-[#F3F3F3] transition-colors"
+                  >
+                    <User size={14} style={{ color: '#565959' }} />
+                    Your profile
+                  </button>
                   <button
                     type="button"
                     onClick={() => { setDropdownOpen(false); onMyListings?.() }}

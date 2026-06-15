@@ -73,6 +73,12 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  async function updateProfile(data) {
+    if (!supabase) throw new Error('Auth not configured')
+    const { error } = await supabase.auth.updateUser({ data })
+    if (error) throw error
+  }
+
   function clearPasswordRecovery() {
     setPasswordRecovery(false)
   }
@@ -81,7 +87,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user, session, loading,
       signUp, signIn, signInWithGoogle, signOut,
-      resetPassword, updatePassword,
+      resetPassword, updatePassword, updateProfile,
       passwordRecovery, clearPasswordRecovery,
     }}>
       {children}

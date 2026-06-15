@@ -8,6 +8,7 @@ import Personas from './pages/Personas.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import MarketplacePage from './pages/MarketplacePage.jsx'
 import MyListings from './pages/MyListings.jsx'
+import Profile from './pages/Profile.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 import CheckoutModal from './components/CheckoutModal.jsx'
 
@@ -34,6 +35,7 @@ function AppInner() {
   const goDashboard = useCallback(() => setPage('dashboard'), [])
   const goMarket      = useCallback(() => { setSearchQuery(''); setMarketplaceTab('all'); setPage('marketplace') }, [])
   const goMyListings  = useCallback(() => setPage('mylistings'), [])
+  const goProfile     = useCallback(() => setPage('profile'), [])
   const goSearch    = useCallback((q) => { setSearchQuery(q); setPage('marketplace') }, [])
   const openAuth    = useCallback(() => setAuthModalOpen(true), [])
   const closeAuth   = useCallback(() => setAuthModalOpen(false), [])
@@ -117,6 +119,7 @@ function AppInner() {
     onOpenCart:       openCart,
     onSignIn:         openAuth,
     onMyListings:     goMyListings,
+    onProfile:        goProfile,
     cartItems,
     cartCount,
     onRemoveFromCart: removeFromCart,
@@ -127,6 +130,9 @@ function AppInner() {
     <>
       {page === 'mylistings' && (
         <MyListings onBack={goHome} nav={nav} onSell={goIntake} />
+      )}
+      {page === 'profile' && (
+        <Profile onBack={goHome} nav={nav} />
       )}
       {page === 'intake' && (
         <Intake onBack={goHome} demoMode={demoMode} nav={nav} />
@@ -152,6 +158,7 @@ function AppInner() {
           onSearch={goSearch}
           onSignIn={openAuth}
           onMyListings={goMyListings}
+          onProfile={goProfile}
           cartCount={cartCount}
           onOpenCart={openCart}
         />

@@ -55,6 +55,7 @@ export default function MyListings({ onBack, nav = {}, onSell }) {
         onOpenCart={nav.onOpenCart}
         onSignIn={nav.onSignIn}
         onMyListings={nav.onMyListings}
+        onProfile={nav.onProfile}
       />
       <SubNav
         onGetStarted={nav.onGetStarted}

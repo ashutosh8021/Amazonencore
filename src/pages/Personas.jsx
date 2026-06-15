@@ -739,7 +739,7 @@ export default function Personas({ onBack, nav = {}, onScrollTo }) {
 
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} />
+      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} onProfile={nav.onProfile} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}

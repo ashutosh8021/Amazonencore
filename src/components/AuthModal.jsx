@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react'
 import { Lock, LogIn, Mail, User, X, CheckCircle2, ArrowLeft, KeyRound } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
+function friendlyError(msg = '') {
+  if (msg.includes('Invalid login credentials')) return "No account found with this email or password is incorrect. Please check your details or create an account."
+  if (msg.includes('User already registered') || msg.includes('already been registered')) return "An account with this email already exists. Sign in instead."
+  if (msg.includes('Email not confirmed')) return "Please verify your email first — check your inbox for a verification link."
+  if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return "Too many attempts. Please wait a minute and try again."
+  if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch')) return "Connection error — check your internet and try again."
+  if (msg.includes('Password should be')) return "Password must be at least 6 characters."
+  return msg
+}
+
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -47,7 +57,7 @@ export default function AuthModal({ onClose }) {
       await signIn(email, password)
       onClose()
     } catch (err) {
-      setError(err.message)
+      setError(friendlyError(err.message))
     } finally {
       setLoading(false)
     }
@@ -61,7 +71,7 @@ export default function AuthModal({ onClose }) {
       setSignupEmail(email)
       switchView('verify')
     } catch (err) {
-      setError(err.message)
+      setError(friendlyError(err.message))
     } finally {
       setLoading(false)
     }
@@ -74,7 +84,7 @@ export default function AuthModal({ onClose }) {
       await resetPassword(email)
       setSuccess('sent')
     } catch (err) {
-      setError(err.message)
+      setError(friendlyError(err.message))
     } finally {
       setLoading(false)
     }
@@ -89,7 +99,7 @@ export default function AuthModal({ onClose }) {
       clearPasswordRecovery()
       onClose()
     } catch (err) {
-      setError(err.message)
+      setError(friendlyError(err.message))
     } finally {
       setLoading(false)
     }
@@ -100,7 +110,7 @@ export default function AuthModal({ onClose }) {
     try {
       await signInWithGoogle()
     } catch (err) {
-      setError(err.message)
+      setError(friendlyError(err.message))
     }
   }
 

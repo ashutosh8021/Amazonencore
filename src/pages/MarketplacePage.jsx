@@ -10,7 +10,7 @@ export default function MarketplacePage({ onBack, nav = {}, searchQuery = '', in
 
   return (
     <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
-      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} />
+      <TopNav onPrimaryAction={nav.onGetStarted} primaryLabel="Sell with Encore" onHome={onBack} onSearch={nav.onSearch} cartCount={nav.cartCount} onOpenCart={nav.onOpenCart} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} onProfile={nav.onProfile} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}

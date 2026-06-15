@@ -183,7 +183,7 @@ export default function Dashboard({ onBack, nav = {}, onScrollTo }) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#eaeded' }}>
-      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} />
+      <TopNav onPrimaryAction={onBack} primaryLabel="Back to home" onHome={onBack} onOpenCart={nav.onOpenCart} cartCount={nav.cartCount} onSignIn={nav.onSignIn} onMyListings={nav.onMyListings} onProfile={nav.onProfile} />
       <SubNav
         onGetStarted={nav.onGetStarted}
         onDemoMode={nav.onDemoMode}
