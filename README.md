@@ -98,4 +98,55 @@ If a judge remembers one thing tomorrow, make it this:
 
 > *"The team that showed an AI deciding NOT to resell a ₹500 shoe — and explaining why, in money and carbon, on screen — was Amazon Encore."*
 
+---
+
+## 8. Running locally
+
+**Prerequisites:** Node.js 18+ and npm.
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Create your env file from the template and fill in the values
+cp .env.example .env
+#    - At minimum set the AI provider keys (GROQ_API_KEY, or the Bedrock keys)
+#      and AI_PROVIDER. Supabase keys are optional (the app falls back to
+#      in-memory/seed data without them).
+
+# 3. Start the backend API (Express, port 3001)
+npm run server
+#    or, with auto-reload during development:
+#    npm run server:dev
+
+# 4. In a second terminal, start the frontend (Vite, port 5173)
+npm run dev
+
+# 5. Open the app
+#    http://localhost:5173  (Vite proxies /api → http://localhost:3001)
+```
+
+**Other useful commands:**
+
+```bash
+npm test          # run the test suite (Vitest)
+npm run build     # production build into dist/
+npm run preview   # preview the production build locally
+```
+
+**Environment variables** — see [`.env.example`](./.env.example) for the full list. Key ones:
+
+| Variable | Purpose |
+| --- | --- |
+| `AI_PROVIDER` | `groq` (default), `bedrock-bearer`, or `bedrock-sdk` |
+| `GROQ_API_KEY` / `GROQ_MODEL_ID` | Groq provider credentials |
+| `AWS_BEARER_TOKEN_BEDROCK` / `BEDROCK_MODEL_ID` / `AWS_REGION` | Bedrock (bearer) provider |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Bedrock (SDK / IAM) provider |
+| `SUPABASE_URL` / `SUPABASE_KEY` | Server-side persistence (optional) |
+| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Frontend auth (anon key only — safe to expose) |
+| `ALLOWED_ORIGINS` | Comma-separated CORS allowlist for production |
+| `MARKETPLACE_WRITE_TOKEN` | Guards `POST /api/marketplace` (leave blank in dev) |
+
+> **Never commit `.env`.** It is gitignored. Only `.env.example` (empty values) is tracked.
+
 Everything else is supporting evidence.

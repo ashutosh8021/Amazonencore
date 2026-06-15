@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { supabase } from '../lib/supabase.js'
 import { storeImage } from '../lib/imageStorage.js'
+import { requireWriteToken } from '../middleware/writeAuth.js'
+import { validateName, validatePrice, validateCategory, validateGrade, MAX_IMAGE_B64_LEN } from '../lib/validate.js'
 
 const router = Router()
 
@@ -21,14 +23,32 @@ async function getUserId(req) {
   }
 }
 
-/* POST /api/marketplace — save a new listing to Supabase */
-router.post('/', async (req, res) => {
+/* POST /api/marketplace — save a new listing to Supabase (write-guarded) */
+router.post('/', requireWriteToken, async (req, res) => {
   try {
     const { title, description, conditionLabel, suggestedPrice, originalPrice,
             category, grade, confidence, observations, imageBase64, mediaType,
-            additionalImages, co2SavedKg } = req.body
+            additionalImages, co2SavedKg } = req.body || {}
 
-    if (!title) return res.status(400).json({ error: 'Title is required' })
+    // ── validate request body ──
+    const t = validateName(title, { required: true, max: 300 })
+    if (!t.ok) return res.status(400).json({ error: 'invalid_input', message: t.message.replace('name', 'title') })
+
+    const cat = validateCategory(category)
+    if (!cat.ok) return res.status(400).json({ error: 'invalid_input', message: cat.message })
+
+    const sp = validatePrice(suggestedPrice)
+    if (!sp.ok) return res.status(400).json({ error: 'invalid_input', message: sp.message.replace('price', 'suggestedPrice') })
+
+    const op = validatePrice(originalPrice)
+    if (!op.ok) return res.status(400).json({ error: 'invalid_input', message: op.message.replace('price', 'originalPrice') })
+
+    const gr = validateGrade(conditionLabel || grade, { required: false })
+    if (!gr.ok) return res.status(400).json({ error: 'invalid_input', message: gr.message })
+
+    if (typeof imageBase64 === 'string' && imageBase64.length > MAX_IMAGE_B64_LEN) {
+      return res.status(413).json({ error: 'invalid_input', message: 'Image is too large (max 10 MB).' })
+    }
 
     let imageUrl = null
     if (imageBase64) {
@@ -49,13 +69,13 @@ router.post('/', async (req, res) => {
     const userId = await getUserId(req)
 
     const row = {
-      title,
+      title: t.value,
       description: description || '',
-      category: category || 'General',
-      condition_grade: conditionLabel || grade || 'Good',
+      category: cat.value || 'General',
+      condition_grade: gr.value || 'Good',
       condition_score: confidence || 80,
-      price: Number(suggestedPrice) || 0,
-      original_price: Number(originalPrice) || 0,
+      price: sp.value || 0,
+      original_price: op.value || 0,
       image_url: imageUrl,
       additional_images: additionalUrls,
       tag: 'Just listed',
@@ -72,21 +92,21 @@ router.post('/', async (req, res) => {
         .select()
 
       if (error) {
-        console.error(`[marketplace] [${req.requestId}] Supabase insert error:`, error.message)
-        return res.status(500).json({ error: error.message })
+        console.error(`[marketplace] [${req.requestId}] Supabase insert error:`, error)
+        return res.status(500).json({ error: 'server_error', message: 'Could not save the listing. Please try again.' })
       }
 
-      console.log(`[marketplace] [${req.requestId}] Listed "${title}" by user ${userId ?? 'anonymous'}`)
+      console.log(`[marketplace] [${req.requestId}] Listed "${t.value}" by user ${userId ?? 'anonymous'}`)
       return res.json({ ok: true, listing: data[0] })
     }
 
     const item = { id: `local-${Date.now()}`, ...row, created_at: new Date().toISOString() }
     fallbackStore.unshift(item)
-    console.log(`[marketplace] [${req.requestId}] Listed "${title}" in-memory (${fallbackStore.length} total)`)
+    console.log(`[marketplace] [${req.requestId}] Listed "${t.value}" in-memory (${fallbackStore.length} total)`)
     res.json({ ok: true, listing: item })
   } catch (err) {
-    console.error(`[marketplace] [${req.requestId}] Error:`, err.message)
-    res.status(500).json({ error: err.message })
+    console.error(`[marketplace] [${req.requestId}] Error:`, err)
+    res.status(500).json({ error: 'server_error', message: 'Could not save the listing. Please try again.' })
   }
 })
 
@@ -101,8 +121,8 @@ router.get('/', async (_req, res) => {
         .limit(100)
 
       if (error) {
-        console.error('[marketplace] Supabase fetch error:', error.message)
-        return res.status(500).json({ error: error.message })
+        console.error('[marketplace] Supabase fetch error:', error)
+        return res.status(500).json({ error: 'server_error', message: 'Could not load listings.' })
       }
 
       return res.json({ listings: data })
@@ -110,8 +130,8 @@ router.get('/', async (_req, res) => {
 
     res.json({ listings: fallbackStore })
   } catch (err) {
-    console.error('[marketplace] Error:', err.message)
-    res.status(500).json({ error: err.message })
+    console.error('[marketplace] Error:', err)
+    res.status(500).json({ error: 'server_error', message: 'Could not load listings.' })
   }
 })
 

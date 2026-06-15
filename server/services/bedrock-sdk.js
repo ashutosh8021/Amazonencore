@@ -1,6 +1,7 @@
 // Bedrock SDK integration — IAM credential auth, native Anthropic content blocks
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
 import { parseJSON } from '../lib/parseJSON.js'
+import { sanitizePromptText } from '../lib/sanitize.js'
 
 // Lazy — only instantiated when bedrock-sdk provider is actually used,
 // so missing IAM credentials don't crash the server at startup.
@@ -36,7 +37,8 @@ async function invokeModel(messages) {
 
   let response
   try {
-    response = await getClient().send(command)
+    // 30 s timeout — abort the call rather than hanging a request indefinitely.
+    response = await getClient().send(command, { abortSignal: AbortSignal.timeout(30_000) })
   } catch (err) {
     throw new Error(`Bedrock SDK ${err.$metadata?.httpStatusCode || 'unknown'}: ${err.message}`)
   }
@@ -46,10 +48,13 @@ async function invokeModel(messages) {
 }
 
 export async function gradeImage({ imageBase64, mediaType, name, price, category }) {
+  const safeName = sanitizePromptText(name, 200)
+  const safeCategory = sanitizePromptText(category, 100)
+  const safePrice = Number.isFinite(Number(price)) && Number(price) > 0 ? Math.round(Number(price)) : null
   const context = [
-    name ? `Product name: ${name}` : null,
-    price ? `Original price: ₹${price}` : null,
-    category ? `Category: ${category}` : null,
+    safeName ? `Product name: ${safeName}` : null,
+    safePrice ? `Original price: ₹${safePrice}` : null,
+    safeCategory ? `Category: ${safeCategory}` : null,
   ].filter(Boolean).join('. ')
 
   const prompt = `You are an Amazon warehouse quality-grading AI. Inspect the product in the image carefully.
@@ -92,10 +97,10 @@ Return ONLY valid JSON, no markdown, no commentary. Exactly these keys:
 export async function generateListing({ product, grade, observations, price }) {
   const prompt = `You are an Amazon marketplace listing writer. Write an honest, condition-accurate product listing.
 
-Product: ${product}
+Product: ${sanitizePromptText(product, 200)}
 Grade: ${grade}
-Observed flaws/notes: ${(observations || []).join(', ')}
-${price ? `Suggested price: ₹${price}` : ''}
+Observed flaws/notes: ${(observations || []).map(o => sanitizePromptText(o, 120)).filter(Boolean).join(', ')}
+${Number.isFinite(Number(price)) && Number(price) > 0 ? `Suggested price: ₹${Math.round(Number(price))}` : ''}
 
 Rules:
 - The description MUST mention the actual observed flaws — do not hide them

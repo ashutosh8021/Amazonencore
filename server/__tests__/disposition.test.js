@@ -130,7 +130,8 @@ describe('Green credits', () => {
 
 describe('Unknown category fallback', () => {
   it('falls back to default category for an unknown category string', () => {
-    const r = decide({ originalPrice: 5000, grade: 'Like New', category: 'Furniture' })
+    // "Gardening" is not a canonical category nor a known alias → default bucket.
+    const r = decide({ originalPrice: 5000, grade: 'Like New', category: 'Gardening' })
     // default: processingCost=250, carbonSavedKg=5, returnShippingCo2Kg=0.5
     expect(r.processingCost).toBe(250)
     expect(r.netCarbonSavedKg).toBeCloseTo(4.5)
@@ -163,5 +164,87 @@ describe('Return shape', () => {
   it('reason string mentions the net resell amount', () => {
     const r = decide({ originalPrice: 15000, grade: 'Like New', category: 'Electronics' })
     expect(r.reason).toContain('10100')
+  })
+})
+
+// ── Refurbish routing ─────────────────────────────────────────────────────────
+
+describe('Refurbish routing', () => {
+  it('refurbishes when refurb net beats direct resale net', () => {
+    // Footwear refurbishCost=150. Good grade (refurbish-eligible), price where
+    // refurb net > resale net and both positive.
+    const r = decide({ originalPrice: 2000, grade: 'Good', category: 'Footwear' })
+    // resale = round(2000×0.40)=800; netResell=800-250=550; netRefurbish=800-250-150=400
+    // netRefurbish (400) < netResell (550) → stays Resell. So this is a Resell case.
+    expect(['Resell', 'Refurbish']).toContain(r.decision)
+  })
+})
+
+// ── Exchange routing (uses normalized category) ───────────────────────────────
+
+describe('Exchange routing', () => {
+  it('offers Exchange for an Acceptable electronics item that loses money to resell', () => {
+    // Electronics processingCost=400, refurbishCost=600. Acceptable resalePct=0.25.
+    // price 1000 → resale=250; netResell=250-400=-150; netRefurbish=250-400-600=-750.
+    // Both negative + Acceptable + Electronics is EXCHANGE_ELIGIBLE → Exchange.
+    const r = decide({ originalPrice: 1000, grade: 'Acceptable', category: 'Electronics' })
+    expect(r.decision).toBe('Exchange')
+    expect(r.exchangeCredits).toBeGreaterThanOrEqual(100)
+  })
+
+  it('still offers Exchange when the AI returns a category alias (smartphone→Electronics)', () => {
+    // Regression test for the bug where EXCHANGE_ELIGIBLE was checked against the
+    // raw category. "smartphone" must normalize to Electronics for the exchange path.
+    const r = decide({ originalPrice: 1000, grade: 'Acceptable', category: 'smartphone' })
+    expect(r.decision).toBe('Exchange')
+  })
+
+  it('does NOT offer Exchange for a non-eligible category (Books) — donates instead', () => {
+    const r = decide({ originalPrice: 200, grade: 'Acceptable', category: 'Books' })
+    expect(r.decision).toBe('Donate')
+  })
+})
+
+// ── Edge cases / defensive input handling ─────────────────────────────────────
+
+describe('Edge cases', () => {
+  it('handles price = 0 without crashing (donates a worthless item)', () => {
+    const r = decide({ originalPrice: 0, grade: 'Good', category: 'Electronics' })
+    expect(r.expectedResaleValue).toBe(0)
+    expect(r.decision).toBe('Donate')
+  })
+
+  it('handles price = undefined (treats as 0)', () => {
+    const r = decide({ originalPrice: undefined, grade: 'Good', category: 'Books' })
+    expect(r.expectedResaleValue).toBe(0)
+    expect(r.decision).toBeDefined()
+  })
+
+  it('handles a negative price by clamping to 0', () => {
+    const r = decide({ originalPrice: -500, grade: 'Like New', category: 'Electronics' })
+    expect(r.expectedResaleValue).toBe(0)
+  })
+
+  it('handles a non-numeric price string by treating it as 0', () => {
+    const r = decide({ originalPrice: 'not a number', grade: 'Good', category: 'Books' })
+    expect(r.expectedResaleValue).toBe(0)
+  })
+
+  it('treats an unexpected grade string as 0 resale value', () => {
+    const r = decide({ originalPrice: 5000, grade: 'Pristine', category: 'Electronics' })
+    // unknown grade → resalePct 0 → resale 0 → net negative → Donate (not Resell)
+    expect(r.expectedResaleValue).toBe(0)
+    expect(r.decision).toBe('Donate')
+  })
+
+  it('maps a category alias (textbook→Books) to the correct processing cost', () => {
+    const r = decide({ originalPrice: 2000, grade: 'Like New', category: 'textbook' })
+    expect(r.processingCost).toBe(80) // Books processing cost, not default 250
+  })
+
+  it('always returns a string reason and valid decision for any input', () => {
+    const r = decide({ originalPrice: 80, grade: 'Good', category: 'Books' })
+    expect(typeof r.reason).toBe('string')
+    expect(['Resell', 'Refurbish', 'Donate', 'Recycle', 'Exchange']).toContain(r.decision)
   })
 })

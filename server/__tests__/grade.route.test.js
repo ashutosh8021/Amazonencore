@@ -21,7 +21,9 @@ import { gradeImage } from '../services/index.js'
 
 function makeApp() {
   const app = express()
-  app.use(express.json({ limit: '10mb' }))
+  // Larger than the route's own image limit so the route validation fires
+  // (rather than body-parser rejecting the payload first).
+  app.use(express.json({ limit: '20mb' }))
   app.use('/api/grade', gradeRouter)
   return app
 }
@@ -35,7 +37,8 @@ describe('POST /api/grade — input validation', () => {
   it('returns 400 when imageBase64 is missing', async () => {
     const res = await request(makeApp()).post('/api/grade').send({ mediaType: 'image/jpeg' })
     expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/imageBase64/)
+    expect(res.body.error).toBe('invalid_input')
+    expect(res.body.message).toMatch(/imageBase64/)
   })
 
   it('returns 400 when imageBase64 is not a string (number sent)', async () => {
@@ -43,8 +46,8 @@ describe('POST /api/grade — input validation', () => {
     expect(res.status).toBe(400)
   })
 
-  it('returns 413 when imageBase64 exceeds the 4 MB limit', async () => {
-    const oversized = 'A'.repeat(5_500_001)
+  it('returns 413 when imageBase64 exceeds the 10 MB limit', async () => {
+    const oversized = 'A'.repeat(13_981_014) // one over the 10 MB-equivalent cap
     const res = await request(makeApp()).post('/api/grade').send({ imageBase64: oversized, mediaType: 'image/jpeg' })
     expect(res.status).toBe(413)
     expect(res.body.error).toBe('image_too_large')
@@ -53,7 +56,7 @@ describe('POST /api/grade — input validation', () => {
   it('returns 400 when mediaType is missing', async () => {
     const res = await request(makeApp()).post('/api/grade').send({ imageBase64: VALID_B64 })
     expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/mediaType/)
+    expect(res.body.message).toMatch(/mediaType/)
   })
 
   it('returns 400 when mediaType is not an image mime type', async () => {
@@ -104,10 +107,18 @@ describe('POST /api/grade — successful grading', () => {
     })
   })
 
-  it('returns 500 with the real error message when gradeImage throws', async () => {
+  it('returns 503 and surfaces the real error message when the AI upstream is unavailable', async () => {
     gradeImage.mockRejectedValueOnce(new Error('Bedrock API 503: Service Unavailable'))
     const res = await request(makeApp()).post('/api/grade').send(VALID_BODY)
+    // Upstream 5xx / throttling maps to 503 (transient); CLAUDE.md rule 7: real message surfaced.
+    expect(res.status).toBe(503)
+    expect(res.body.message).toContain('Bedrock API 503')
+  })
+
+  it('returns 500 for a non-transient AI error', async () => {
+    gradeImage.mockRejectedValueOnce(new Error('Unexpected parsing failure'))
+    const res = await request(makeApp()).post('/api/grade').send(VALID_BODY)
     expect(res.status).toBe(500)
-    expect(res.body.error).toContain('Bedrock API 503')
+    expect(res.body.message).toContain('Unexpected parsing failure')
   })
 })

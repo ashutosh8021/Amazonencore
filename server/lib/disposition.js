@@ -1,3 +1,7 @@
+// Encore decision engine. Given an item's original price, AI condition grade, and
+// category, it deterministically routes to Resell / Refurbish / Donate / Recycle /
+// Exchange using value-vs-cost-vs-carbon math. This is OUR business logic — the AI
+// only perceives condition; it never makes the routing decision (CLAUDE.md §3).
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const categories = require('../data/categories.json')
@@ -68,11 +72,15 @@ function fmt(n) {
 }
 
 export function decide({ originalPrice, grade, category, confidence }) {
-  const cats = categories[normalizeCategory(category)] ?? categories['default']
+  const canonicalCategory = normalizeCategory(category)
+  const cats = categories[canonicalCategory] ?? categories['default']
   const { processingCost, refurbishCost, carbonSavedKg, returnShippingCo2Kg = 0.5 } = cats
 
+  // Guard against non-numeric / negative price reaching the math.
+  const price = Number.isFinite(Number(originalPrice)) && Number(originalPrice) > 0 ? Number(originalPrice) : 0
+
   const resalePct = resalePctByGrade[grade] ?? 0
-  const expectedResaleValue = fmt(originalPrice * resalePct)
+  const expectedResaleValue = fmt(price * resalePct)
   const netResell = fmt(expectedResaleValue - processingCost)
   const canRefurbish = grade === 'Good' || grade === 'Acceptable'
   const netRefurbish = canRefurbish ? fmt(expectedResaleValue - processingCost - refurbishCost) : -Infinity
@@ -80,7 +88,7 @@ export function decide({ originalPrice, grade, category, confidence }) {
   const netCarbonSavedKg = Math.max(0, carbonSavedKg - returnShippingCo2Kg)
   const greenCredits = Math.max(1, Math.round(netCarbonSavedKg * 10))
   // Exchange credit = 15% of original price (Amazon Pay), min ₹100
-  const exchangeCredits = Math.max(100, fmt(originalPrice * 0.15))
+  const exchangeCredits = Math.max(100, fmt(price * 0.15))
 
   let decision
   let reason
@@ -88,7 +96,7 @@ export function decide({ originalPrice, grade, category, confidence }) {
   if (grade === 'Not Sellable') {
     decision = 'Recycle'
     reason = `Item is not sellable in any condition. Routing to recycling saves ${netCarbonSavedKg.toFixed(1)} kg CO2 net of return shipping.`
-  } else if (netResell < 0 && netRefurbish < 0 && grade === 'Acceptable' && EXCHANGE_ELIGIBLE.has(category)) {
+  } else if (netResell < 0 && netRefurbish < 0 && grade === 'Acceptable' && EXCHANGE_ELIGIBLE.has(canonicalCategory)) {
     decision = 'Exchange'
     reason = `Too worn to resell profitably (net ₹${netResell}) but still functional. Encore trade-in gives you ₹${exchangeCredits} Amazon Pay credit toward a certified refurbished replacement.`
   } else if (netResell < 0 && netRefurbish < 0) {

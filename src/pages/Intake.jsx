@@ -134,6 +134,33 @@ async function blobToBase64(blob) {
   })
 }
 
+// Resize an uploaded image to max 1024px on the long side and re-encode as JPEG
+// before base64-ing. Shrinks payloads dramatically (faster upload + faster AI
+// grading). Falls back to the raw file if the browser can't decode it (e.g. HEIC).
+async function fileToResizedBase64(file, maxEdge = 1024, quality = 0.85) {
+  try {
+    const bitmap = await createImageBitmap(file)
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height))
+    const w = Math.round(bitmap.width * scale)
+    const h = Math.round(bitmap.height * scale)
+
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(bitmap, 0, 0, w, h)
+    bitmap.close?.()
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality))
+    if (!blob) throw new Error('canvas.toBlob returned null')
+    const base64 = await blobToBase64(blob)
+    return { base64, mediaType: 'image/jpeg' }
+  } catch {
+    // Decode/resize failed — send the original untouched.
+    return { base64: await toBase64(file), mediaType: file.type }
+  }
+}
+
 function ConfidenceBar({ value }) {
   const color = value >= 75 ? '#067D62' : value >= 50 ? '#FF9900' : '#cc0c39'
   const label = value >= 75 ? 'High' : value >= 50 ? 'Medium' : 'Low'
@@ -537,8 +564,8 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
     if (f.size > 4 * 1024 * 1024) return
     if (extraImages.length >= 3) return
     const preview = URL.createObjectURL(f)
-    const base64 = await toBase64(f)
-    setExtraImages(prev => [...prev, { preview, base64, mediaType: f.type }])
+    const { base64, mediaType } = await fileToResizedBase64(f)
+    setExtraImages(prev => [...prev, { preview, base64, mediaType }])
   }
 
   function removeExtraImage(idx) {
@@ -562,10 +589,10 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
 
     try {
       setLoadingStep('Grading condition with AI...')
-      const b64 = await toBase64(file)
+      const { base64: b64, mediaType: b64Type } = await fileToResizedBase64(file)
       const graded = await gradeImage({
         imageBase64: b64,
-        mediaType: file.type,
+        mediaType: b64Type,
         name: name || undefined,
         price: price ? Number(price) : undefined,
         category: category || undefined,

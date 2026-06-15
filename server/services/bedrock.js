@@ -1,5 +1,6 @@
 // Bedrock OpenAI-compatible endpoint — bearer-token auth, same interface as groq.js
 import { parseJSON } from '../lib/parseJSON.js'
+import { sanitizePromptText } from '../lib/sanitize.js'
 
 function bedrockUrl() {
   const region = process.env.AWS_REGION || 'us-east-1'
@@ -33,10 +34,13 @@ async function callBedrock(messages) {
 }
 
 export async function gradeImage({ imageBase64, mediaType, name, price, category }) {
+  const safeName = sanitizePromptText(name, 200)
+  const safeCategory = sanitizePromptText(category, 100)
+  const safePrice = Number.isFinite(Number(price)) && Number(price) > 0 ? Math.round(Number(price)) : null
   const context = [
-    name ? `Product name: ${name}` : null,
-    price ? `Original price: ₹${price}` : null,
-    category ? `Category: ${category}` : null,
+    safeName ? `Product name: ${safeName}` : null,
+    safePrice ? `Original price: ₹${safePrice}` : null,
+    safeCategory ? `Category: ${safeCategory}` : null,
   ].filter(Boolean).join('. ')
 
   const prompt = `You are an Amazon warehouse quality-grading AI. Inspect the product in the image carefully.
@@ -74,12 +78,15 @@ Return ONLY valid JSON, no markdown, no commentary. Exactly these keys:
 }
 
 export async function generateListing({ product, grade, observations, price }) {
+  const safeProduct = sanitizePromptText(product, 200)
+  const safeObs = (observations || []).map(o => sanitizePromptText(o, 120)).filter(Boolean).join(', ')
+  const safePrice = Number.isFinite(Number(price)) && Number(price) > 0 ? Math.round(Number(price)) : null
   const prompt = `You are an Amazon marketplace listing writer. Write an honest, condition-accurate product listing.
 
-Product: ${product}
+Product: ${safeProduct}
 Grade: ${grade}
-Observed flaws/notes: ${(observations || []).join(', ')}
-${price ? `Suggested price: ₹${price}` : ''}
+Observed flaws/notes: ${safeObs}
+${safePrice ? `Suggested price: ₹${safePrice}` : ''}
 
 Rules:
 - The description MUST mention the actual observed flaws — do not hide them
