@@ -143,7 +143,7 @@ We are starting with college campuses because the density is right same pin code
 | --- | --- |
 | Frontend | React 19, Vite 8, Tailwind CSS v3, lucide-react |
 | Backend | Node.js, Express 5 |
-| AI | Kimi (vision + text); pluggable provider switch (Groq / Bedrock / Kimi) |
+| AI | Amazon Bedrock — Kimi K2.5 (vision + text); pluggable provider switch |
 | Persistence | Supabase (Postgres + Storage + Auth) — optional, with in-memory fallback |
 | Security | Input validation, prompt-injection sanitization, CORS allowlist, hardened headers, write-token auth, rate limiting |
 
