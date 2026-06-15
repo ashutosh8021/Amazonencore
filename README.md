@@ -4,8 +4,6 @@
 
 ### Every product deserves another chance.
 
-**An AI intelligence layer that routes every returned product to its highest-value second life — resell, refurbish, donate, or recycle — and shows the math behind every call, on screen.**
-
 Built for **HackOn with Amazon Season 6.0** · *Second Life Commerce — AI-Powered Returns & Sustainable Resale*
 
 ![Built with React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
@@ -20,29 +18,47 @@ Built for **HackOn with Amazon Season 6.0** · *Second Life Commerce — AI-Powe
 
 ---
 
-## Why Encore exists
+## Why the name Encore?
 
-Returns are not a problem to be managed — they are inventory waiting for a smarter decision. Today that decision is made by a human, item by item, at a cost of ₹250–5,000 per return, millions of times a year. Most of the time the item is perfectly usable. Most of the time the decision is wrong. Encore automates it.
+In performing arts, an encore is the moment the audience refuses to let the show end. The performer has given everything. The curtain has fallen. But the crowd keeps clapping — calling them back for one more.
 
----
+*That is what this product is about.*
 
-## The insight that defines this product
+A returned product is not a failure. It is a performer that did its job, got sent back, and deserves to be called out for one more act. One more owner. One more purpose. Instead of a warehouse shelf or a landfill, it gets an encore.
 
-> **For a ₹500 shoe returned in "Good" condition, the correct AI decision is often NOT to resell it** — because inspection and relisting cost more than the item will ever recover. *Knowing when not to relist is the product.*
-
-Most teams build "AI grades the item, AI lists the item." **Encore decides whether listing it is even worth it** — the intelligent bridge Amazon's own brief says is missing for the long tail.
+We named it Encore because the best products — like the best performances — deserve to be remembered.
 
 ---
 
-## The problem
+## The problem I actually live with
 
-Millions of products are returned, underused, or discarded despite being perfectly usable. Today, when a return arrives, a **human manually inspects it**, assigns a condition grade, and decides its fate — slow, and costing **₹250–5,000+ per return** in labour and reverse logistics, millions of times over.
+I am a student at IIT Patna, living in a hostel.
 
-- US retail returns ≈ **$890B** in 2024; ~9.5 billion lbs of returned goods reach US landfills yearly.
-- India fashion return rates: **25–40%**; reverse logistics can cost up to **1.5× the original delivery**.
-- The recommerce demand exists — the real bottleneck is **trust in condition**, exactly what explainable AI grading solves.
+One evening I ordered a ₹400 t-shirt online. It arrived. It did not fit. I raised a return. A rider came the next morning, picked it up, and drove it 200 km back to the nearest fulfilment centre. There it sat — inspected by hand, repackaged, and listed again. A week later, my neighbour on the same floor — who had been thinking about buying that exact same shirt — ordered it. Amazon shipped it 200 km back to our hostel.
 
-We are **not** building another marketplace. We're building the **AI decision layer** that automates the routing call Amazon does by hand.
+The same item made a 400 km round trip to change hands across a corridor.
+
+That is not a logistics problem. That is a missing feature. And I built Encore to fill it.
+
+---
+
+## But the problem goes deeper than that
+
+That shirt story is about wasted distance. The deeper problem is wasted decisions.
+
+Every day, Amazon processes millions of returns. Each one needs a human to inspect it, assign a condition grade, and decide its fate — resell, refurbish, donate, or recycle. That costs between ₹250 and ₹5,000 per item. Millions of times a year. And most of the time, the decision is wrong.
+
+Take a ₹500 running shoe returned in "Good" condition. A human looks at it, marks it resellable, and sends it back to the marketplace. But inspection costs ₹150. Repackaging costs ₹50. Listing and fulfilment costs ₹50 more. The shoe sells for ₹200.
+
+That is a guaranteed ₹50 loss — and nobody flagged it before the decision was made.
+
+**Knowing when not to relist is the product. That is what Encore does.**
+
+- India fashion return rates run at **25–40%**; reverse logistics can cost up to **1.5× the original delivery**
+- US retail returns hit **$890B** in 2024, with 9.5 billion lbs of goods reaching landfills yearly
+- The demand for second-hand products exists — the bottleneck is **trust in condition**, exactly what explainable AI grading solves
+
+We are not building another marketplace. We are building the **AI decision layer** that automates the routing call Amazon does by hand — and shows the math on screen so the customer always knows why.
 
 ---
 
@@ -51,57 +67,55 @@ We are **not** building another marketplace. We're building the **AI decision la
 | Step | What happens |
 | --- | --- |
 | **1 · Snap** | Upload a photo of the returned or unused item. |
-| **2 · Grade** | Vision AI (Amazon Bedrock) produces an explainable condition report and assigns Amazon's real four-tier grade (Like New / Very Good / Good / Acceptable) + a "Not Sellable" outcome, with a confidence score. |
-| **3 · Route** | A deterministic engine scores **value vs. cost vs. carbon** and picks the optimal fate. The math is shown on screen. |
-| **4 · Reward** | The customer earns quantified green credits; if resale wins, an LLM auto-writes the condition-accurate listing. |
+| **2 · Grade** | Vision AI (Amazon Bedrock — Kimi K2.5) produces an explainable condition report: grade, confidence score, and observed flaws — from a single photo. |
+| **3 · Route** | Our own deterministic engine runs `expected resale value − processing cost = net return`. If the number is negative, Encore does not relist. The math is shown on screen. |
+| **4 · Reward** | If resale wins, an LLM writes the condition-accurate listing. If it does not, the customer earns green credits — CO₂ saved, converted to Amazon Pay. |
+
+One thing to be clear about: **the AI never makes the routing decision**. It only tells us what it sees — condition, flaws, confidence. The decision is made by our own deterministic, testable code. Same input, same output, every time. No hallucination on business logic.
 
 <div align="center">
 
-### AI condition grade
+### What the AI sees
 ![AI condition report](screenshots/condition-report.png)
 
-### The decision math — our differentiator
+### The decision the engine makes — and why
 ![Decision math screen](screenshots/decision-math.png)
 
 </div>
 
 ---
 
-## Architecture — *AI perceives, code decides*
+## Encore Campus — the idea that came from living this problem
 
-A deliberate separation that keeps the system trustworthy and auditable:
+Back to that hostel corridor.
 
-```
-                         ┌──────────────────────────────┐
-  Browser (React)        │  Express API  (server/)       │
-  presentation only ───► │  validates · rate-limits ·    │
-  no secrets, no math    │  sanitizes · holds all secrets│
-                         └───────────────┬───────────────┘
-                            ┌────────────┴────────────┐
-                            ▼                          ▼
-                  ┌───────────────────┐    ┌──────────────────────┐
-                  │ Amazon Bedrock     │    │ disposition.js        │
-                  │ PERCEIVES only:    │    │ DECIDES:              │
-                  │ condition, flaws,  │    │ value − cost vs       │
-                  │ confidence         │    │ carbon → the routing  │
-                  │ (never the price)  │    │ call (deterministic)  │
-                  └───────────────────┘    └──────────────────────┘
-```
+The shirt did not need to go anywhere. My neighbour was right there. If Amazon had just shown him — "hey, someone two floors up is returning this, want it at a discount?" — the item never leaves the building. No rider. No 400 km trip. No warehouse. No second delivery. Just two students and a shirt, changing hands in a corridor.
 
-- **The AI never makes the business decision.** It only reports what it sees. The resell/donate/recycle call is made by our own deterministic, testable code — so pricing is consistent, explainable, and auditable.
-- **The frontend is presentation only.** No API keys, no model IDs, no business math in the browser. It calls our own `/api/*` endpoints and renders results.
-- **The backend is the only thing holding secrets and the only thing talking to the AI.**
+That is Encore Campus.
+
+**When you raise a return, we automatically list the item at a discount in your campus feed for 48 hours.** No action needed from you — the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get paid. The buyer pays less than retail. If nobody buys within 48 hours, a rider picks it up as normal — nothing changes for you.
+
+In a market like India, where a discount is one of the strongest purchase triggers there is, the match rate within 48 hours is not an edge case. It is the default.
+
+The result: Amazon saves the double logistics cost. The original owner gets paid faster. The buyer gets it cheaper. And the item never leaves campus.
+
+We are starting with colleges because the density is right — same pin code, same hostel block, same age group. From there it expands to apartment complexes, local neighbourhoods, and city-level peer resale. The model scales because the insight scales: **the best delivery is no delivery at all.**
+
+<div align="center">
+
+![Encore Campus](screenshots/campus.png)
+
+</div>
 
 ---
 
-## Key features
+## One more thing about books
 
-- 🧠 **Explainable AI grading** via Amazon Bedrock — condition, flaws, and confidence from a single photo.
-- ⚖️ **Transparent decision engine** — shows `expectedResaleValue − processingCost = netResell` and the carbon math behind every routing call.
-- 🌱 **Green credits** — quantified CO₂ savings rewarded to the customer, net of return-shipping emissions.
-- 📍 **Encore Campus** — when a return is raised on campus, the item is automatically listed at a discount for nearby students for 48 hours. If it sells, Amazon never touches it. See below.
-- ✍️ **Auto-generated listings** — when resale wins, an LLM writes an honest, condition-accurate listing that names real flaws.
-- 📊 **Impact dashboard** — running totals of value recovered and CO₂ diverted from landfill.
+Amazon started as a bookstore. That is not a coincidence — it matters here.
+
+Second-hand books are where Encore Campus makes its most natural first move. Same campus. Same course. Same textbook, passing from a third-year student to a first-year student who needs it next semester. No shipping. No warehouse. AI-verified condition. A price both sides feel good about.
+
+Millions of students already want affordable textbooks. Encore gives them a trusted, verified way to find them — and gives the original owner something back instead of nothing.
 
 <div align="center">
 
@@ -109,33 +123,40 @@ A deliberate separation that keeps the system trustworthy and auditable:
 | :---: | :---: |
 | ![Marketplace](screenshots/marketplace.png) | ![Dashboard](screenshots/dashboard.png) |
 
-*Amazon started as a bookstore. Second-hand books are where Encore Campus makes its most natural first move — same campus, same course, same book changing hands without a single km of logistics. Millions of students already want affordable textbooks. Encore gives them a trusted, AI-verified way to find them.*
-
 </div>
 
 ---
 
-## Encore Campus — the best delivery is no delivery at all
+## Architecture — *AI perceives, code decides*
 
-Here is the problem we actually live with.
+```
+  Browser (React)          Express API  (server/)
+  presentation only  ───►  validates · rate-limits · sanitizes
+  no secrets, no math      holds all secrets + keys
+                                      │
+                    ┌─────────────────┴──────────────────┐
+                    ▼                                     ▼
+         Amazon Bedrock (Kimi K2.5)              disposition.js
+         PERCEIVES only:                         DECIDES:
+         condition, flaws,                       value − cost vs carbon
+         confidence score                        → routing call
+         (never the price)                       (deterministic, testable)
+```
 
-You are in a college hostel. You ordered a ₹400 t-shirt. It does not fit. You raise a return. Amazon sends a pickup rider, ships the item 200 km back to a fulfilment centre, grades it, repackages it, and relists it. A week later, your neighbour two floors up who was already thinking about buying that exact shirt orders it. Amazon ships it 200 km back to your campus.
+- **The AI never makes the business decision.** The resell/donate/recycle call is made by our own deterministic code — consistent, auditable, explainable.
+- **The frontend is presentation only.** No API keys, no model IDs, no business math in the browser.
+- **The backend is the only thing holding secrets and the only thing talking to the AI.**
 
-The same item made a 400 km round trip to change hands across a corridor.
+---
 
-In a market like India, where a discount is one of the strongest purchase triggers there is, the probability of a campus match within 48 hours is not an edge case — it is the default. Encore Campus is built around that reality.
+## Key features
 
-**How it works:** when you raise a return, we automatically list the item at a discount in your campus feed for 48 hours. No action needed from you — the item stays with you until it sells. If someone at your college buys it, Amazon arranges a simple handoff and you get paid; the buyer gets a discounted product. If nobody buys it in 48 hours, a rider picks it up as normal.
-
-The result: Amazon saves the double logistics cost. The original owner gets paid faster. The buyer pays less than retail. The item never leaves campus.
-
-We are starting with college campuses because the density is right — same pin code, same hostel block, same age group, maximum chance of a match. From there the model expands to apartment complexes, local neighbourhoods, and eventually city-level peer resale.
-
-<div align="center">
-
-![Encore Campus](screenshots/campus.png)
-
-</div>
+- 🧠 **Explainable AI grading** — condition, flaws, and confidence from a single photo via Amazon Bedrock.
+- ⚖️ **Transparent decision engine** — shows `expectedResaleValue − processingCost = netResell` and the carbon math behind every routing call.
+- 🌱 **Green credits** — quantified CO₂ savings rewarded to the customer, net of return-shipping emissions.
+- 📍 **Encore Campus** — auto-listed at a campus-only discount for 48 hours on every return. If it sells locally, Amazon never touches it.
+- ✍️ **Auto-generated listings** — when resale wins, an LLM writes an honest, condition-accurate listing that names real flaws.
+- 📊 **Impact dashboard** — running totals of value recovered and CO₂ diverted from landfill.
 
 ---
 
@@ -218,15 +239,13 @@ amazon-encore/
 
 ---
 
-## The three personas (resolved live in the demo)
+## The three personas
 
-- **Priya** returns a ₹500 shoe — 600 km back to the warehouse, costs more to relist than it recovers. → Encore routes to **Donate**, math shown. *The headline moment.*
-- **Rahul** has a baby monitor that works perfectly but will not sell on classifieds. → trusted peer-to-peer resale with an AI condition report.
-- **Small Seller** processes 200 returns a month by hand. → AI grades and lists in seconds.
+- **Priya** returns a ₹500 shoe — 600 km back to the warehouse, costs more to relist than it recovers. Encore routes to **Donate**, math shown on screen. *This is the headline moment.*
+- **Rahul** has a baby monitor that works perfectly but will not sell on classifieds. Trusted peer-to-peer resale with an AI condition report.
+- **Small Seller** processes 200 returns a month by hand. AI grades and lists in seconds.
 
 ---
-
-## The win condition
 
 > *"The team that showed an AI deciding NOT to resell a ₹500 shoe — and explaining why, in money and carbon, on screen — was Amazon Encore."*
 
@@ -234,7 +253,7 @@ amazon-encore/
 
 <div align="center">
 
-**Team** · Ashutosh Kumar — Full-Stack + AI Engineer
+**Team** · Ashutosh Kumar (IIT Patna) · Preeti Gupta (KIIT University)
 
 Built for HackOn with Amazon Season 6.0
 
