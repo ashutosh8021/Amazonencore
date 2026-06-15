@@ -1,44 +1,7 @@
 import { CheckCircle, Heart, Leaf, TrendingUp } from 'lucide-react'
 import EncoreMark from './EncoreMark.jsx'
 
-const MODULES = [
-  {
-    title: 'Sell with Encore',
-    body: 'Upload a photo. AI grades condition, shows the value math, and routes the item in seconds.',
-    cta: 'Start listing',
-    ctaStyle: { backgroundColor: '#FFD814', color: '#0F1111' },
-    action: 'sell',
-  },
-  {
-    title: 'Encore marketplace',
-    body: 'Browse AI-verified second-life listings. Honest condition reports. Prices that reflect reality.',
-    cta: 'Browse deals',
-    ctaStyle: { backgroundColor: '#FF9900', color: '#0F1111' },
-    action: 'marketplace',
-  },
-  {
-    title: 'See AI decide live',
-    body: 'Watch Encore grade a real item, show the cost-vs-value math, and make the routing call.',
-    cta: 'Run demo',
-    ctaStyle: { backgroundColor: '#232F3E', color: '#fff' },
-    action: 'demo',
-  },
-  {
-    title: 'Encore impact',
-    body: '12,847 items rescued. ₹1.82 Cr recovered. 48.2 tons CO2 diverted from landfill.',
-    cta: 'See our impact',
-    ctaStyle: { backgroundColor: '#e6f4ea', color: '#067D62' },
-    action: 'impact',
-  },
-]
-
 export default function Hero({ onGetStarted, onDemoMode, onMarketplace }) {
-  const actionMap = {
-    sell: onGetStarted,
-    marketplace: onMarketplace,
-    demo: onDemoMode,
-    impact: () => document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-  }
 
   return (
     <>
@@ -187,35 +150,6 @@ export default function Hero({ onGetStarted, onDemoMode, onMarketplace }) {
         </div>
       </div>
 
-      {/* ── Module grid — 4 white cards like amazon.in homepage ─── */}
-      <div style={{ backgroundColor: '#eaeded' }} className="px-4 pt-4 pb-2">
-        <div className="max-w-[1500px] mx-auto grid grid-cols-2 xl:grid-cols-4 gap-3">
-          {MODULES.map((mod) => (
-            <div
-              key={mod.title}
-              className="rounded-md bg-white p-5 flex flex-col"
-              style={{ minHeight: 160 }}
-            >
-              <h3 style={{ color: '#0F1111', fontWeight: 700, fontSize: 17, marginBottom: 8, lineHeight: 1.25 }}>
-                {mod.title}
-              </h3>
-              <p style={{ color: '#565959', fontSize: 13, lineHeight: 1.55, marginBottom: 16, flex: 1 }}>
-                {mod.body}
-              </p>
-              {actionMap[mod.action] && (
-                <button
-                  type="button"
-                  onClick={actionMap[mod.action]}
-                  style={{ ...mod.ctaStyle, padding: '7px 18px', borderRadius: 4, fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', alignSelf: 'flex-start' }}
-                  className="hover:brightness-95 transition-all"
-                >
-                  {mod.cta}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
     </>
   )
 }
