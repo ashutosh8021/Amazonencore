@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  AlertCircle, AlertTriangle, ArrowLeft, ArrowLeftRight, Award, CheckCircle2, Heart, Leaf, Loader2, RotateCcw,
+  AlertCircle, AlertTriangle, ArrowLeft, ArrowLeftRight, Award, CheckCircle2, Heart, Leaf, Loader2, Plus, RotateCcw,
   ShieldCheck, Shirt, Smartphone, TrendingUp, Upload, Wrench, X, Zap,
 } from 'lucide-react'
 import TopNav from '../components/TopNav.jsx'
@@ -505,8 +505,10 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
   const [decideResult, setDecideResult]   = useState(null)
   const [listingResult, setListingResult] = useState(null)
   const [showReport, setShowReport]       = useState(false)
+  const [extraImages, setExtraImages]     = useState([]) // [{preview, base64, mediaType}]
 
   const inputRef = useRef(null)
+  const extraInputRef = useRef(null)
   const hasAutoRun = useRef(false)
 
   function handleFile(f) {
@@ -530,11 +532,25 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
     handleFile(e.dataTransfer.files[0])
   }
 
+  async function handleExtraFile(f) {
+    if (!f || !f.type.startsWith('image/')) return
+    if (f.size > 4 * 1024 * 1024) return
+    if (extraImages.length >= 3) return
+    const preview = URL.createObjectURL(f)
+    const base64 = await toBase64(f)
+    setExtraImages(prev => [...prev, { preview, base64, mediaType: f.type }])
+  }
+
+  function removeExtraImage(idx) {
+    setExtraImages(prev => prev.filter((_, i) => i !== idx))
+  }
+
   function reset() {
     setFile(null); setPreview(null)
     setName(''); setPrice(''); setCategory('')
     setLoading(false); setLoadingStep(''); setError(null); setLowConfidence(false)
     setGradeResult(null); setDecideResult(null); setListingResult(null); setShowReport(false)
+    setExtraImages([])
   }
 
   async function run() {
@@ -893,6 +909,48 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                       </div>
                     </div>
 
+                    {/* Extra photos — shown only after main photo selected */}
+                    {preview && !demoMode && (
+                      <div className="rounded-md border bg-white p-5" style={{ borderColor: '#D5D9D9' }}>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#879596] mb-1">Optional</p>
+                        <h2 className="text-base font-bold text-[#0F1111] mb-1">Add more photos</h2>
+                        <p className="text-sm text-[#565959] mb-4">Show buyers every angle — up to 3 additional photos.</p>
+                        <input
+                          ref={extraInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleExtraFile(e.target.files[0])}
+                        />
+                        <div className="flex flex-wrap gap-3">
+                          {extraImages.map((img, idx) => (
+                            <div key={idx} className="relative w-20 h-20">
+                              <img src={img.preview} alt={`extra ${idx+1}`} className="w-20 h-20 object-cover rounded-md border" style={{ borderColor: '#D5D9D9' }} />
+                              <button
+                                type="button"
+                                onClick={() => removeExtraImage(idx)}
+                                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border shadow flex items-center justify-center"
+                                style={{ borderColor: '#D5D9D9' }}
+                              >
+                                <X size={11} />
+                              </button>
+                            </div>
+                          ))}
+                          {extraImages.length < 3 && (
+                            <button
+                              type="button"
+                              onClick={() => extraInputRef.current?.click()}
+                              className="w-20 h-20 rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors"
+                              style={{ borderColor: '#D5D9D9' }}
+                            >
+                              <Plus size={18} style={{ color: '#879596' }} />
+                              <span className="text-[10px] text-[#879596]">Add photo</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     <div
                       className="bg-white rounded-md border p-5 md:p-6 flex flex-col gap-4"
                       style={{ borderColor: '#D5D9D9' }}
@@ -1024,6 +1082,7 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                         gradeResult={gradeResult}
                         decideResult={decideResult}
                         imageUrl={preview}
+                        extraImages={extraImages}
                         originalPrice={price ? Number(price) : 0}
                         category={gradeResult.category || category}
                         onSignIn={nav.onSignIn}
@@ -1203,8 +1262,10 @@ export default function Intake({ onBack, demoMode = false, nav = {}, onScrollTo 
                     gradeResult={gradeResult}
                     decideResult={decideResult}
                     imageUrl={preview}
+                    extraImages={extraImages}
                     originalPrice={price ? Number(price) : 0}
                     category={gradeResult.category || category}
+                    onSignIn={nav.onSignIn}
                   />
                 )}
 

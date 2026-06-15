@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle2, Loader2, LogIn, ShieldCheck, Star, Truck, Eye, ExternalLink } from 'lucide-react'
+import { CheckCircle2, Loader2, LogIn, ShieldCheck, Star, Truck, Eye, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import { publishListing } from '../lib/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -13,13 +13,15 @@ const GRADE_COLOR = {
   'Not Sellable': { color: '#cc0c39', bg: '#fce8e8' },
 }
 
-export default function ListingPreview({ listing, gradeResult, decideResult, imageUrl, originalPrice, category, onSignIn }) {
+export default function ListingPreview({ listing, gradeResult, decideResult, imageUrl, extraImages = [], originalPrice, category, onSignIn }) {
   if (!listing) return null
 
   const { user } = useAuth() ?? {}
   const [listed, setListed] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState(null)
+  const allImages = [imageUrl, ...extraImages.map(e => e.preview)].filter(Boolean)
+  const [activeImg, setActiveImg] = useState(0)
 
   const grade = listing.conditionLabel || gradeResult?.grade || 'Good'
   const cfg = GRADE_COLOR[grade] ?? GRADE_COLOR['Good']
@@ -69,6 +71,7 @@ export default function ListingPreview({ listing, gradeResult, decideResult, ima
         confidence: confidence,
         observations: gradeResult?.observations || [],
         imageBase64,
+        additionalImages: extraImages.map(e => ({ base64: e.base64, mediaType: e.mediaType })),
         co2SavedKg: gradeResult?.co2SavedKgEstimate || 0,
       })
       setListed(true)
@@ -101,28 +104,46 @@ export default function ListingPreview({ listing, gradeResult, decideResult, ima
       <div className="p-5 md:p-6">
         <div className="flex flex-col sm:flex-row gap-5">
 
-          {/* product image */}
+          {/* product image gallery */}
           <div className="sm:w-[200px] flex-shrink-0">
             <div className="h-[200px] rounded-lg border overflow-hidden relative"
               style={{ borderColor: '#D5D9D9', backgroundColor: '#F7F8F8' }}>
-              {imageUrl ? (
-                <img src={imageUrl} alt={listing.title}
+              {allImages.length > 0 ? (
+                <img src={allImages[activeImg]} alt={listing.title}
                   className="w-full h-full object-contain p-2" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#879596] text-sm">
-                  No image
-                </div>
+                <div className="w-full h-full flex items-center justify-center text-[#879596] text-sm">No image</div>
               )}
               <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
-                style={{ backgroundColor: cfg.bg, color: cfg.color }}>
-                {grade}
-              </span>
+                style={{ backgroundColor: cfg.bg, color: cfg.color }}>{grade}</span>
               <span className="absolute top-2 right-2 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
                 style={{ backgroundColor: '#e6f4ea', color: '#067D62' }}>
-                <ShieldCheck size={10} />
-                Encore Verified
+                <ShieldCheck size={10} />Encore Verified
               </span>
+              {allImages.length > 1 && (
+                <>
+                  <button type="button" onClick={() => setActiveImg(i => (i - 1 + allImages.length) % allImages.length)}
+                    className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center shadow">
+                    <ChevronLeft size={14} />
+                  </button>
+                  <button type="button" onClick={() => setActiveImg(i => (i + 1) % allImages.length)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center shadow">
+                    <ChevronRight size={14} />
+                  </button>
+                </>
+              )}
             </div>
+            {allImages.length > 1 && (
+              <div className="flex gap-1.5 mt-2 justify-center">
+                {allImages.map((src, i) => (
+                  <button key={i} type="button" onClick={() => setActiveImg(i)}
+                    className="w-10 h-10 rounded border overflow-hidden flex-shrink-0 transition-all"
+                    style={{ borderColor: activeImg === i ? '#FF9900' : '#D5D9D9', borderWidth: activeImg === i ? 2 : 1 }}>
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* product details */}

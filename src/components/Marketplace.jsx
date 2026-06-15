@@ -23,8 +23,18 @@ function conditionCounts(items) {
 
 function ProductImage({ product }) {
   const fallback = `https://picsum.photos/seed/${product.id}/400/400`
-  const [src, setSrc] = useState(product.image ?? fallback)
+  const mainImg = product.image ?? fallback
+  const extras = Array.isArray(product.additional_images) ? product.additional_images : []
+  const allImgs = [mainImg, ...extras].filter(Boolean)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [src, setSrc] = useState(allImgs[0])
   const cfg = CONDITION_COLOR[product.conditionGrade] ?? CONDITION_COLOR['Good']
+
+  function goTo(i) {
+    setActiveIdx(i)
+    setSrc(allImgs[i] ?? fallback)
+  }
+
   return (
     <div className="w-full sm:w-[180px] flex-shrink-0">
       <div
@@ -43,7 +53,24 @@ function ProductImage({ product }) {
         >
           {product.tag}
         </span>
+        {allImgs.length > 1 && (
+          <span className="absolute bottom-1.5 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff' }}>
+            {activeIdx + 1}/{allImgs.length}
+          </span>
+        )}
       </div>
+      {allImgs.length > 1 && (
+        <div className="flex gap-1 mt-1.5 overflow-x-auto">
+          {allImgs.map((img, i) => (
+            <button key={i} type="button" onClick={() => goTo(i)}
+              className="w-9 h-9 rounded border flex-shrink-0 overflow-hidden transition-all"
+              style={{ borderColor: activeIdx === i ? '#FF9900' : '#D5D9D9', borderWidth: activeIdx === i ? 2 : 1 }}>
+              <img src={img} alt="" className="w-full h-full object-cover" onError={() => {}} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -153,6 +180,7 @@ export default function Marketplace({ searchQuery = '', onAddToCart, onBuyNow, i
             price: Number(item.price) || 0,
             originalPrice: Number(item.original_price) || 0,
             image: item.image_url || null,
+            additional_images: item.additional_images || [],
             tag: 'Just listed',
             rating: '—',
             reviews: 'New',

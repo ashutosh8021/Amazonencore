@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
   try {
     const { title, description, conditionLabel, suggestedPrice, originalPrice,
             category, grade, confidence, observations, imageBase64, mediaType,
-            co2SavedKg } = req.body
+            additionalImages, co2SavedKg } = req.body
 
     if (!title) return res.status(400).json({ error: 'Title is required' })
 
@@ -34,6 +34,16 @@ router.post('/', async (req, res) => {
     if (imageBase64) {
       imageUrl = await storeImage(imageBase64, mediaType || 'image/jpeg')
         ?? `data:${mediaType || 'image/jpeg'};base64,${imageBase64}`
+    }
+
+    const additionalUrls = []
+    if (Array.isArray(additionalImages)) {
+      for (const img of additionalImages.slice(0, 3)) {
+        if (!img.base64) continue
+        const url = await storeImage(img.base64, img.mediaType || 'image/jpeg')
+          ?? `data:${img.mediaType || 'image/jpeg'};base64,${img.base64}`
+        additionalUrls.push(url)
+      }
     }
 
     const userId = await getUserId(req)
@@ -47,6 +57,7 @@ router.post('/', async (req, res) => {
       price: Number(suggestedPrice) || 0,
       original_price: Number(originalPrice) || 0,
       image_url: imageUrl,
+      additional_images: additionalUrls,
       tag: 'Just listed',
       observations: observations || [],
       condition_summary: description || '',
