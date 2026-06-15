@@ -1,106 +1,125 @@
+<div align="center">
+
 # Amazon Encore
 
-> AI-powered recommerce platform that gives returned and unused products a meaningful second life.
-> Built for **HackOn with Amazon Season 6.0** — theme: *Second Life Commerce — AI-Powered Returns & Sustainable Resale.*
+### Every product deserves another chance.
 
-This file explains **what** we're building and **why**. For the technical design see [`ARCHITECTURE.md`](./ARCHITECTURE.md). For how Claude Code should build it (rules + phased plan) see [`CLAUDE.md`](./CLAUDE.md).
+**An AI intelligence layer that decides the smartest second life for every returned product — resell, refurbish, donate, or recycle — and shows its reasoning in money and carbon, on screen.**
 
----
+Built for **HackOn with Amazon Season 6.0** · *Second Life Commerce — AI-Powered Returns & Sustainable Resale*
 
-## 1. The problem (verbatim from Amazon)
+![Built with React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+![Amazon Bedrock](https://img.shields.io/badge/Amazon%20Bedrock-AI-FF9900?logo=amazonaws&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-65%20passing-067D62)
 
-> Millions of products bought online are returned, underused, or discarded despite being perfectly usable. Returns are expensive for customers, sellers, and the planet. Customers also struggle to trust refurbished or second-hand products.
->
-> What if Amazon could create an intelligent ecosystem where returned or unused products automatically find their next best owner?
->
-> Imagine: AI deciding whether an item should be resold, refurbished, donated, recycled, or exchanged · smart quality grading through image/video analysis · personalized recommendations for certified refurbished products · sustainable incentives and "green credits" · easy peer-to-peer resale inside Amazon's trusted ecosystem · predictive return prevention before a purchase is even made.
+![Amazon Encore landing page](screenshots/landing.png)
 
-Amazon's own kickoff framing of the gap: **"Millions of products. No intelligent bridge. The system works for premium. For the long tail — it breaks."** Illustrated with three personas (see section 6).
-
----
-
-## 2. Our thesis (this is what wins)
-
-Amazon **already** has the marketplace, the warehouses, and a returns program (FBA Grade and Resell, Amazon Renewed, Amazon Warehouse, Amazon Outlet, FBA Donations via Good360). Today, when a return arrives, a **human manually inspects it**, assigns one of four conditions, and decides what happens to it. That manual decision is slow, costs ₹800–5,000+ per return in labor and reverse logistics, and happens millions of times.
-
-**We are not building another marketplace.** Building one would duplicate what Amazon runs and signal we didn't do our homework.
-
-**We are building the AI intelligence layer that automates the decision** — the "intelligent bridge" Amazon's slide says is missing. The instant a return arrives: grade condition from a photo, weigh recovered value vs. processing cost vs. carbon, pick the best disposition (resell / refurbish / donate / recycle), and — only if resale wins — auto-generate the used-condition listing.
-
-**The single insight to internalize:** for a low-value item like a ₹500 shoe, the *correct* AI decision is often **NOT to resell**, because inspection + relisting costs more than it recovers. *That judgment is the product.* Most teams will build "AI grades item, AI lists item." We build "AI decides whether listing it is even worth it." That reframe directly answers the "long tail breaks" line.
+</div>
 
 ---
 
-## 3. The product
+## The one insight that defines this product
 
-**Tagline:** *Every product deserves another chance.*
+> **For a ₹500 shoe returned in "Good" condition, the *correct* AI decision is often NOT to resell it** — because inspection and relisting cost more than the item recovers. *Knowing when not to relist is the product.*
 
-**Core loop — Snap → Grade → Route → Reward:**
-
-1. **Snap** — a photo of the returned/unused item (customer, warehouse associate, or seller).
-2. **Grade** — vision AI produces an explainable condition report and assigns Amazon's actual four-tier grade (Like New / Very Good / Good / Acceptable), plus a fifth "Not Sellable" outcome, with a confidence score.
-3. **Route** — a deterministic decision engine picks the optimal fate by transparently scoring value vs. cost vs. carbon. The math is shown on screen.
-4. **Reward** — the customer earns quantified green credits; if resale is chosen, an LLM auto-writes the condition-accurate listing.
-
-Use Amazon's exact four-grade taxonomy — judges notice the homework.
+Most teams build "AI grades the item, AI lists the item." **Encore decides whether listing it is even worth it** — the intelligent bridge Amazon's own brief says is missing for the long tail.
 
 ---
 
-## 4. Research and numbers (cite these in the pitch)
+## The problem
 
-**Global returns problem**
-- US retail returns ~$890B in 2024; ~$849.9B in 2025 (~15.8% of sales).
-- Online return rate ~19–20% of orders.
-- Per-return processing cost: $10–65.
-- ~9.5 billion pounds of returned goods reach US landfills annually.
+Millions of products are returned, underused, or discarded despite being perfectly usable. Today, when a return arrives, a **human manually inspects it**, assigns a condition grade, and decides its fate — slow, and costing **₹250–5,000+ per return** in labour and reverse logistics, millions of times over.
 
-**India context (judges care most)**
-- India e-commerce: $125B (2024) → projected $345B (2030).
-- Fashion/apparel return rates: **25–40%**.
-- COD orders have far higher return-to-origin rates (no financial commitment to refuse).
-- Reverse logistics can cost up to 1.5× the original delivery.
-- **67% of customers avoid a brand after a poor return experience** — the Customer Obsession headline.
+- US retail returns ≈ **$890B** in 2024; ~9.5 billion lbs of returned goods reach US landfills yearly.
+- India fashion return rates: **25–40%**; reverse logistics can cost up to **1.5× the original delivery**.
+- The recommerce demand exists — the real bottleneck is **trust in condition**, exactly what explainable AI grading solves.
 
-**Recommerce demand exists**
-- Global recommerce ~$89B in 2025, growing ~11%/yr.
-- 93% of US consumers bought secondhand in the last year.
-- ~68% prefer pre-owned where available; ~57% actively compare refurbished vs. new.
-- The bottleneck is **trust in condition** — exactly what explainable AI grading solves.
-
-**What Amazon already runs (so we don't reinvent it)**
-- FBA Grade and Resell — manual inspection, four condition grades, electronics powered on/tested/reset.
-- Amazon Renewed / Warehouse / Outlet — existing recommerce surfaces.
-- FBA Donations + Good360 — 67M+ products redirected to charities.
+We are **not** building another marketplace. We're building the **AI decision layer** that automates the routing call Amazon does by hand.
 
 ---
 
-## 5. Why this wins (judging lens)
+## How it works — Snap → Grade → Route → Reward
 
-The finale panel spans AWS, Amazon Pay, Amazon Devices. They judge on Customer Obsession, real pain solved, Leadership Principles fit, feasibility in 48h, a polished end-to-end demo (not sprawl), innovation, scalability, storytelling, and competitive advantage.
+| Step | What happens |
+| --- | --- |
+| **1 · Snap** | Upload a photo of the returned/unused item. |
+| **2 · Grade** | Vision AI (Amazon Bedrock) produces an explainable condition report and assigns Amazon's real four-tier grade (Like New / Very Good / Good / Acceptable) + a "Not Sellable" outcome, with a confidence score. |
+| **3 · Route** | A deterministic engine scores **value vs. cost vs. carbon** and picks the optimal fate. The math is shown on screen. |
+| **4 · Reward** | The customer earns quantified green credits; if resale wins, an LLM auto-writes the condition-accurate listing. |
 
-Our edge: high business relevance (a real Amazon cost center), a memorable reframe (decide, don't just list), a live demo on a real object, and the long-tail insight no other team will lead with. We deliver **one polished loop deeply** plus supporting evidence — never six shallow features.
+<div align="center">
 
----
+### AI condition grade
+![AI condition report](screenshots/condition-report.png)
 
-## 6. The three personas (resolve all three live in the demo)
+### The decision math — our differentiator
+![Decision math screen](screenshots/decision-math.png)
 
-From Amazon's kickoff slide:
-
-- **Priya** — returns a ₹500 shoe; 600km back to warehouse; costs more to relist than it's worth; today it's written off. → Encore routes to **Donate**, math shown. This is the headline moment.
-- **Rahul** — baby monitor works perfectly; won't list on classifieds; 50 nearby parents want it. → trusted peer-to-peer resale with an AI trust report.
-- **Small Seller** — 200 returns/month, manually inspects and re-photographs each. → batch view; AI grades and lists in seconds.
-
----
-
-## 7. The win condition
-
-If a judge remembers one thing tomorrow, make it this:
-
-> *"The team that showed an AI deciding NOT to resell a ₹500 shoe — and explaining why, in money and carbon, on screen — was Amazon Encore."*
+</div>
 
 ---
 
-## 8. Running locally
+## Architecture — *AI perceives, code decides*
+
+A deliberate separation that keeps the system trustworthy and auditable:
+
+```
+                         ┌──────────────────────────────┐
+  Browser (React)        │  Express API  (server/)       │
+  presentation only ───► │  validates · rate-limits ·    │
+  no secrets, no math    │  sanitizes · holds all secrets│
+                         └───────────────┬───────────────┘
+                            ┌────────────┴────────────┐
+                            ▼                          ▼
+                  ┌───────────────────┐    ┌──────────────────────┐
+                  │ Amazon Bedrock     │    │ disposition.js        │
+                  │ PERCEIVES only:    │    │ DECIDES:              │
+                  │ condition, flaws,  │    │ value − cost vs       │
+                  │ confidence         │    │ carbon → the routing  │
+                  │ (never the price)  │    │ call (deterministic)  │
+                  └───────────────────┘    └──────────────────────┘
+```
+
+- **The AI never makes the business decision.** It only reports what it sees. The resell/donate/recycle call is made by our own deterministic, testable code — so pricing is consistent, explainable, and auditable.
+- **The frontend is presentation only.** No API keys, no model IDs, no business math in the browser. It calls our own `/api/*` endpoints and renders results.
+- **The backend is the only thing holding secrets and the only thing talking to the AI.**
+
+---
+
+## Key features
+
+- 🧠 **Explainable AI grading** via Amazon Bedrock — condition, flaws, and confidence from a single photo.
+- ⚖️ **Transparent decision engine** — shows `expectedResaleValue − processingCost = netResell` and the carbon math behind every routing call.
+- 🌱 **Green credits** — quantified CO₂ savings rewarded to the customer, net of return-shipping emissions.
+- 📍 **Encore Campus** — a location-aware resale feed: nearby buyers get returned/open-box items at a discount via hand-to-hand handoff, zero reverse-logistics miles.
+- ✍️ **Auto-generated listings** — when resale wins, an LLM writes an honest, condition-accurate listing that names real flaws.
+- 📊 **Impact dashboard** — running totals of value recovered and CO₂ diverted from landfill.
+
+<div align="center">
+
+| Marketplace · Encore Campus | Impact dashboard |
+| :---: | :---: |
+| ![Marketplace](screenshots/marketplace.png) | ![Dashboard](screenshots/dashboard.png) |
+
+</div>
+
+---
+
+## Tech stack
+
+| Layer | Tech |
+| --- | --- |
+| Frontend | React 19, Vite 8, Tailwind CSS v3, lucide-react |
+| Backend | Node.js, Express 5 |
+| AI | Amazon Bedrock (Claude vision + text); pluggable provider switch |
+| Persistence | Supabase (Postgres + Storage + Auth) — optional, with in-memory fallback |
+| Security | Input validation, prompt-injection sanitization, CORS allowlist, hardened headers, write-token auth, rate limiting |
+
+---
+
+## Running locally
 
 **Prerequisites:** Node.js 18+ and npm.
 
@@ -110,31 +129,27 @@ npm install
 
 # 2. Create your env file from the template and fill in the values
 cp .env.example .env
-#    - At minimum set the AI provider keys (GROQ_API_KEY, or the Bedrock keys)
-#      and AI_PROVIDER. Supabase keys are optional (the app falls back to
-#      in-memory/seed data without them).
+#    Minimum: an AI provider key (GROQ_API_KEY, or Bedrock keys) + AI_PROVIDER.
+#    Supabase keys are optional — the app falls back to in-memory/seed data.
 
 # 3. Start the backend API (Express, port 3001)
-npm run server
-#    or, with auto-reload during development:
-#    npm run server:dev
+npm run server          # or: npm run server:dev  (auto-reload)
 
 # 4. In a second terminal, start the frontend (Vite, port 5173)
 npm run dev
 
-# 5. Open the app
-#    http://localhost:5173  (Vite proxies /api → http://localhost:3001)
+# 5. Open http://localhost:5173   (Vite proxies /api → http://localhost:3001)
 ```
 
-**Other useful commands:**
+**Other commands**
 
 ```bash
-npm test          # run the test suite (Vitest)
+npm test          # run the test suite (Vitest) — 65 tests
 npm run build     # production build into dist/
-npm run preview   # preview the production build locally
+npm run preview   # preview the production build
 ```
 
-**Environment variables** — see [`.env.example`](./.env.example) for the full list. Key ones:
+**Key environment variables** — see [`.env.example`](./.env.example) for the full list.
 
 | Variable | Purpose |
 | --- | --- |
@@ -147,6 +162,48 @@ npm run preview   # preview the production build locally
 | `ALLOWED_ORIGINS` | Comma-separated CORS allowlist for production |
 | `MARKETPLACE_WRITE_TOKEN` | Guards `POST /api/marketplace` (leave blank in dev) |
 
-> **Never commit `.env`.** It is gitignored. Only `.env.example` (empty values) is tracked.
+> **Never commit `.env`.** It is gitignored; only `.env.example` (empty values) is tracked.
 
-Everything else is supporting evidence.
+---
+
+## Project structure
+
+```
+amazon-encore/
+├── src/                      # React frontend (presentation only)
+│   ├── components/           # UI components
+│   ├── pages/                # Landing, Intake, Marketplace, Dashboard, …
+│   ├── lib/                  # API client, Supabase client
+│   └── context/             # Auth context
+├── server/                   # Express backend (secrets + AI live here)
+│   ├── routes/               # /api/grade, /decide, /listing, /marketplace, /dashboard
+│   ├── services/             # AI providers (bedrock, bedrock-sdk, groq) + switch
+│   ├── lib/                  # disposition engine, validation, sanitization, parsing
+│   ├── middleware/           # rate limit, security headers, write auth
+│   └── __tests__/            # Vitest suites (engine + routes)
+└── screenshots/              # README images
+```
+
+---
+
+## The three personas (resolved live in the demo)
+
+- **Priya** returns a ₹500 shoe — 600 km back to the warehouse, costs more to relist than it's worth. → Encore routes to **Donate**, math shown. *The headline moment.*
+- **Rahul** has a baby monitor that works perfectly but won't sell on classifieds. → trusted peer-to-peer resale with an AI trust report.
+- **Small Seller** processes 200 returns/month by hand. → AI grades and lists in seconds.
+
+---
+
+## The win condition
+
+> *"The team that showed an AI deciding NOT to resell a ₹500 shoe — and explaining why, in money and carbon, on screen — was Amazon Encore."*
+
+---
+
+<div align="center">
+
+**Team** · Ashutosh Kumar — Full-Stack + AI Engineer
+
+Built for HackOn with Amazon Season 6.0
+
+</div>
